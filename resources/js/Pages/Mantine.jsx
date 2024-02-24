@@ -30,6 +30,7 @@ const Mantine = () => {
                     <Button onClick={close}>Subscribe</Button>
                 </Group>
             </Dialog>
+            <h1>Halo</h1>
         </>
     );
 };
