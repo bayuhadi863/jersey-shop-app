@@ -19,12 +19,10 @@ use Inertia\Inertia;
 |
 */
 
+// NO AUTH
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/mantine', function () {
-  return Inertia::render('Mantine');
-});
-
+// REQUIRED AUTH
 Route::middleware('auth', 'role:admin')->group(function () {
   Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

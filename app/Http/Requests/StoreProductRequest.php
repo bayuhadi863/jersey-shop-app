@@ -24,7 +24,7 @@ class StoreProductRequest extends FormRequest
   {
     return [
       'name' => 'required|max:150|string',
-      'category_id' => 'required|numeric',
+      'category_id' => 'required',
       'price' => 'required|numeric',
       'image' => [
         'required',
@@ -48,7 +48,6 @@ class StoreProductRequest extends FormRequest
       'name.max' => 'Nama produk maksimal 150 karakter',
       'name.string' => 'Nama produk harus berupa string',
       'category_id.required' => 'Kategori produk wajib diisi',
-      'category_id.numeric' => 'Kategori produk harus berupa angka',
       'price.required' => 'Harga produk wajib diisi',
       'price.numeric' => 'Harga produk harus berupa angka',
       'image.required' => 'Gambar produk wajib diisi',

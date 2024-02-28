@@ -1,4 +1,7 @@
-import { AppShell, Burger, Group, Button, NavLink } from "@mantine/core";
+/* eslint-disable no-undef */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/react-in-jsx-scope */
+import { AppShell, Burger, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "@inertiajs/react";
 import { AiOutlineDashboard } from "react-icons/ai";
@@ -62,8 +65,11 @@ export default function DashboardLayout({ children }) {
             visibleFrom="sm"
             size="sm"
           />
-          <Link href="/" className="text-3xl font-bold text-primary">
-            <span className="text-blue-700">My</span>Jersey
+          <Link href="/" className="text-3xl font-bold">
+            My<span className="text-primary">Jersey</span>
+          </Link>
+          <Link method="post" href={route("logout")} as="button">
+            Logout
           </Link>
         </Group>
       </AppShell.Header>

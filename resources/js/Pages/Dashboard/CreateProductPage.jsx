@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // react import
 import React, { useState } from "react";
 // component import
@@ -20,9 +21,9 @@ import {
   Box,
 } from "@mantine/core";
 // mantine hooks import
-import { useDisclosure } from "@mantine/hooks";
+
 // Dropzone Import
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { Dropzone } from "@mantine/dropzone";
 // Mantine Rich Text Editor import
 import { RichTextEditor, Link } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
@@ -38,14 +39,13 @@ const CreateProductPage = ({ selectCategoriesData }) => {
   // state for select category
   const [value, setValue] = useState("");
   // form data initiation
-  const { data, setData, post, processing, errors, reset, recentlySuccessful } =
-    useForm({
-      name: "",
-      category_id: "",
-      price: "",
-      image: [],
-      description: "",
-    });
+  const { data, setData, post, processing, errors, reset } = useForm({
+    name: "",
+    category_id: "",
+    price: "",
+    image: [],
+    description: "",
+  });
   // handle form submit
   const submit = (e) => {
     e.preventDefault();

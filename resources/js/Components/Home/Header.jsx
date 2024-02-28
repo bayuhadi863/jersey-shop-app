@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-undef */
 import React, { useState } from "react";
 import Container from "./Container";
 import { Link } from "@inertiajs/react";
@@ -9,6 +11,7 @@ import {
   Drawer,
   NavLink,
   Badge,
+  Avatar,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IoSearch } from "react-icons/io5";
@@ -29,7 +32,17 @@ const links = [
   },
 ];
 
-const Header = () => {
+const getInitialName = (name) => {
+  const words = name.split(" ");
+  let initials = "";
+  for (let i = 0; i < Math.min(words.length, 2); i++) {
+    initials += words[i].charAt(0);
+  }
+
+  return initials;
+};
+
+const Header = ({ authenticatedUser }) => {
   const [value, setValue] = useState("");
   const [opened, { open, close }] = useDisclosure();
 
@@ -39,13 +52,13 @@ const Header = () => {
         <Container>
           <div className="flex justify-between items-center">
             <div className="flex gap-14 items-center ">
-              <Link href="/" className="text-primary text-4xl font-bold ">
-                <span className="text-blue-700">My</span>Jersey
+              <Link href="/" className=" text-4xl font-bold ">
+                My<span className="text-primary">Jersey</span>
               </Link>
               <nav className="hidden lg:block">
                 <ul className="flex items-center gap-6 font-semibold uppercase">
-                  {links.map((link) => (
-                    <li>
+                  {links.map((link, i) => (
+                    <li key={i}>
                       <Link
                         href={link.href}
                         className="hover:text-primary transition"
@@ -81,9 +94,23 @@ const Header = () => {
                   }
                 />
 
-                <Button variant="filled" radius="xl">
-                  Button
-                </Button>
+                {authenticatedUser ? (
+                  <Avatar color="cyan" variant="filled" radius="xl">
+                    {getInitialName(authenticatedUser.name)}
+                  </Avatar>
+                ) : (
+                  <Button
+                    variant="filled"
+                    component={Link}
+                    href={route("login")}
+                  >
+                    Masuk
+                  </Button>
+                )}
+
+                <Link method="post" href={route("logout")} as="button">
+                  Logout
+                </Link>
               </div>
               <div className="flex lg:hidden">
                 <Burger
@@ -121,8 +148,8 @@ const Header = () => {
             }
           />
         </div>
-        <Button radius="xl" variant="filled" fullWidth>
-          Login
+        <Button variant="filled" fullWidth>
+          Masuk
         </Button>
       </Drawer>
     </>

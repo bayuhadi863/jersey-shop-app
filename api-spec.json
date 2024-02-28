@@ -1,0 +1,39 @@
+[
+  {
+    "name": "Read Product List in HomePage",
+    "role": "all",
+    "page": "Home/Homepage.jsx",
+    "route": "/",
+    "method": "GET",
+    "controller": "HomeController",
+    "controllerFunction": "featuredProductIndex()",
+    "dataFromDatabse": "Product::with('category', 'product_image', 'product_size')",
+    "dataForFrontEnd": {
+      "id": "uuid",
+      "name": "string",
+      "price": "number",
+      "category": {
+        "id": "uuid",
+        "name": "string"
+      },
+      "description": "string",
+      "product_image": [
+        {
+          "id": "uuid",
+          "image": "string"
+        }
+      ],
+      "product_size": [
+        {
+          "id": "uuid",
+          "size": "string",
+          "stock": "number"
+        }
+      ],
+      "created_at": {
+        "type": "timestamp",
+        "format": ""
+      }
+    }
+  }
+]

@@ -12,6 +12,8 @@
         "@vitejs/plugin-react": "^4.2.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.6.4",
+        "eslint": "^8.57.0",
+        "eslint-plugin-react": "^7.33.2",
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.4.35",
         "postcss-preset-mantine": "^1.13.0",
@@ -22,12 +24,19 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
-        "@mantine/core": "^7.5.3",
-        "@mantine/dates": "^7.5.3",
-        "@mantine/dropzone": "^7.5.3",
-        "@mantine/hooks": "^7.5.3",
-        "@mantine/notifications": "^7.5.3",
-        "@mantine/tiptap": "^7.5.3",
+        "@mantine/carousel": "^7.6.1",
+        "@mantine/charts": "^7.6.1",
+        "@mantine/code-highlight": "^7.6.1",
+        "@mantine/core": "^7.6.1",
+        "@mantine/dates": "^7.6.1",
+        "@mantine/dropzone": "^7.6.1",
+        "@mantine/form": "^7.6.1",
+        "@mantine/hooks": "^7.6.1",
+        "@mantine/modals": "^7.6.1",
+        "@mantine/notifications": "^7.6.1",
+        "@mantine/nprogress": "^7.6.1",
+        "@mantine/spotlight": "^7.6.1",
+        "@mantine/tiptap": "^7.6.1",
         "@tabler/icons-react": "^2.47.0",
         "@tiptap/extension-highlight": "^2.2.4",
         "@tiptap/extension-link": "^2.2.4",
@@ -41,7 +50,9 @@
         "@tiptap/starter-kit": "^2.2.4",
         "clsx": "^2.1.0",
         "dayjs": "^1.11.10",
+        "embla-carousel-react": "^8.0.0",
         "mantine-react-table": "^2.0.0-beta.0",
-        "react-icons": "^5.0.1"
+        "react-icons": "^5.0.1",
+        "recharts": "^2.12.1"
     }
 }
