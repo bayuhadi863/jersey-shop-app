@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/react-in-jsx-scope */
 import { useMemo } from "react";
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 //Component import
@@ -15,6 +18,18 @@ const ProductListPage = ({ data }) => {
   const columns = useMemo(
     () => [
       {
+        accessorKey: "id", //access nested data with dot notation
+        header: "Aksi",
+        Cell: ({ cell }) => (
+          <Link href={route("product.show", cell.getValue())}>Edit</Link>
+        ),
+        size: 80,
+      },
+      {
+        accessorKey: "name", //access nested data with dot notation
+        header: "Nama Produk",
+      },
+      {
         accessorKey: "name", //access nested data with dot notation
         header: "Nama Produk",
       },
@@ -26,6 +41,7 @@ const ProductListPage = ({ data }) => {
         accessorKey: "price",
         header: "Harga",
         Cell: ({ cell }) => <span>Rp{cell.getValue().toLocaleString()}</span>,
+        size: 100,
       },
       {
         accessorKey: "created_at",

@@ -12,10 +12,15 @@ import {
   NavLink,
   Badge,
   Avatar,
+  Menu,
+  rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IoSearch } from "react-icons/io5";
 import { RiShoppingBagLine } from "react-icons/ri";
+import { TbLogout2 } from "react-icons/tb";
+import { RiBillLine } from "react-icons/ri";
+import { LuUser } from "react-icons/lu";
 
 const links = [
   {
@@ -24,7 +29,7 @@ const links = [
   },
   {
     label: "BELANJA",
-    href: "/",
+    href: "/products",
   },
   {
     label: "HUBUNGI KAMI",
@@ -95,9 +100,50 @@ const Header = ({ authenticatedUser }) => {
                 />
 
                 {authenticatedUser ? (
-                  <Avatar color="cyan" variant="filled" radius="xl">
-                    {getInitialName(authenticatedUser.name)}
-                  </Avatar>
+                  <Menu shadow="md" width={200}>
+                    <Menu.Target>
+                      <Avatar
+                        color="cyan"
+                        variant="filled"
+                        radius="xl"
+                        component="button"
+                      >
+                        {getInitialName(authenticatedUser.name)}
+                      </Avatar>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        leftSection={
+                          <LuUser style={{ width: rem(14), height: rem(14) }} />
+                        }
+                      >
+                        Profil
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={
+                          <RiBillLine
+                            style={{ width: rem(14), height: rem(14) }}
+                          />
+                        }
+                      >
+                        Pesanan
+                      </Menu.Item>
+
+                      <Menu.Divider />
+
+                      <Menu.Item
+                        color="red"
+                        leftSection={
+                          <TbLogout2
+                            style={{ width: rem(14), height: rem(14) }}
+                          />
+                        }
+                      >
+                        Logout
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
                 ) : (
                   <Button
                     variant="filled"

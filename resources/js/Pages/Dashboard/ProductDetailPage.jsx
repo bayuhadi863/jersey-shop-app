@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // react import
 import React from "react";
 //component import

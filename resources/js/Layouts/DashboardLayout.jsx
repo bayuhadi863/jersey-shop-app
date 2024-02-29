@@ -104,7 +104,8 @@ export default function DashboardLayout({ children }) {
         )}
       </AppShell.Navbar>
       <AppShell.Main className="bg-gray-100 shadow-inner">
-        <div className="p-4">{children}</div>
+        <div className="p-4 min-h-screen">{children}</div>
+        <footer>Footer</footer>
       </AppShell.Main>
     </AppShell>
   );

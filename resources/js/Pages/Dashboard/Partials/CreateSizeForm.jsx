@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // react import
 import React, { useState } from "react";
 // mantince core import
@@ -13,15 +14,14 @@ import { useForm } from "@inertiajs/react";
 // Mantine notifications import
 import { notifications } from "@mantine/notifications";
 
-const CreateSizeForm = ({product_id, sizes}) => {
+const CreateSizeForm = ({ product_id, sizes }) => {
   // size data
   const selectSizeData = ["XS", "S", "M", "L", "XL", "XXL"];
   // form data initiation
-  const { data, setData, post, processing, errors, reset, recentlySuccessful } =
-    useForm({
-      size: "",
-      stock: "",
-    });
+  const { data, setData, post, processing, errors, reset } = useForm({
+    size: "",
+    stock: "",
+  });
   // handle form submit
   const submit = (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const CreateSizeForm = ({product_id, sizes}) => {
       preserveScroll: true,
       onSuccess: () => {
         reset("size");
-        reset("pstock");
+        reset("stock");
         notifications.show({
           color: "green",
           title: "Success notification",
@@ -52,7 +52,7 @@ const CreateSizeForm = ({product_id, sizes}) => {
         />
         <form onSubmit={submit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* SELECT CATEGORY START */}
+            {/* SELECT SIZE START */}
             <Select
               label="Ukuran produk"
               size="md"
@@ -64,9 +64,9 @@ const CreateSizeForm = ({product_id, sizes}) => {
               }}
               error={errors.size ? errors.size : false}
             />
-            {/* SELECT CATEGORY END */}
+            {/* SELECT SIZE END */}
 
-            {/* INPUT NUMBER START */}
+            {/* INPUT STOK START */}
             <NumberInput
               size="md"
               label="Stok"
@@ -79,7 +79,7 @@ const CreateSizeForm = ({product_id, sizes}) => {
               onChange={(value) => setData("stock", parseInt(value))}
               error={errors.stock ? errors.stock : false}
             />
-            {/* INPUT NUMBER END */}
+            {/* INPUT STOK END */}
           </div>
           <div className="mt-4">
             <Button type="submit" disabled={processing}>

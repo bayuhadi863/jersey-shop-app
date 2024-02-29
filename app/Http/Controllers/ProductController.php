@@ -45,7 +45,7 @@ class ProductController extends Controller
     $categories = Category::select('id', 'name')->get();
     $selectCategoriesData = $categories->map(function ($category) {
       return [
-        'value' => (string) $category->id,
+        'value' => $category->id,
         'label' => $category->name
       ];
     });
@@ -75,7 +75,7 @@ class ProductController extends Controller
       $product->save();
 
       $images = $request->file('image');
-      // dd($images[0]->getClientOriginalName());
+
       foreach ($images as $image) {
         $productImage = new ProductImage();
         $productImage->product_id = $product->id;
@@ -136,5 +136,26 @@ class ProductController extends Controller
   public function destroy(Product $product)
   {
     //
+  }
+
+  public function homeProductIndex()
+  {
+    $products = Product::with('product_image', 'product_size')->limit(8)->get();
+
+    return Inertia::render('Home/ProductListPage', ['products' => $products]);
+  }
+
+  public function homeProductShow($product_id)
+  {
+    $product = Product::with('category', 'product_size', 'product_image')->find($product_id);
+
+    $selectSizeData = $product->product_size->map(function ($item) {
+      return [
+        'value' => $item->id,
+        'label' => $item->size
+      ];
+    });
+
+    return Inertia::render('Home/ProductDetailPage', ['product' => $product, 'selectSizeData' => $selectSizeData]);
   }
 }
