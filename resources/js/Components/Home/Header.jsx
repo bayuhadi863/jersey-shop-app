@@ -21,6 +21,7 @@ import { RiShoppingBagLine } from "react-icons/ri";
 import { TbLogout2 } from "react-icons/tb";
 import { RiBillLine } from "react-icons/ri";
 import { LuUser } from "react-icons/lu";
+import { PiAddressBookBold } from "react-icons/pi";
 
 const links = [
   {
@@ -76,13 +77,13 @@ const Header = ({ authenticatedUser }) => {
               </nav>
             </div>
             <div className="flex gap-6 items-center">
-              <button className="text-2xl relative">
+              <Link className="text-2xl relative" href={route("cart.index")}>
                 <RiShoppingBagLine />
 
                 <Badge className="absolute -top-1 -right-1" size="xs" circle>
                   1
                 </Badge>
-              </button>
+              </Link>
               <div className="hidden lg:flex gap-6 items-center">
                 <Input
                   placeholder="Cari produk"
@@ -117,8 +118,21 @@ const Header = ({ authenticatedUser }) => {
                         leftSection={
                           <LuUser style={{ width: rem(14), height: rem(14) }} />
                         }
+                        component={Link}
+                        href={route("profile.edit")}
                       >
                         Profil
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={
+                          <PiAddressBookBold
+                            style={{ width: rem(14), height: rem(14) }}
+                          />
+                        }
+                        component={Link}
+                        href={route("address.index")}
+                      >
+                        Alamat
                       </Menu.Item>
                       <Menu.Item
                         leftSection={
@@ -139,6 +153,10 @@ const Header = ({ authenticatedUser }) => {
                             style={{ width: rem(14), height: rem(14) }}
                           />
                         }
+                        component={Link}
+                        method="post"
+                        href={route("logout")}
+                        as="button"
                       >
                         Logout
                       </Menu.Item>
@@ -153,10 +171,6 @@ const Header = ({ authenticatedUser }) => {
                     Masuk
                   </Button>
                 )}
-
-                <Link method="post" href={route("logout")} as="button">
-                  Logout
-                </Link>
               </div>
               <div className="flex lg:hidden">
                 <Burger

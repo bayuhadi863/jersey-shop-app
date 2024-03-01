@@ -7,7 +7,7 @@ const HomeLayout = ({ children, authenticatedUser }) => {
   return (
     <>
       <Header authenticatedUser={authenticatedUser} />
-      <main className="text-red">{children}</main>
+      <main className="text-red min-h-screen">{children}</main>
       <Footer />
     </>
   );

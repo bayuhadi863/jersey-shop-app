@@ -12,7 +12,11 @@ class HomeController extends Controller
   public function index()
   {
     $products = Product::with('product_image', 'product_size')->limit(8)->get();
+    $error = null;
+    if (session('error')) {
+      $error = session('error');
+    }
 
-    return Inertia::render('Home/HomePage', ['products' => $products]);
+    return Inertia::render('Home/HomePage', ['products' => $products, 'error' => $error]);
   }
 }

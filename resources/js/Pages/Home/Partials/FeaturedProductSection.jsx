@@ -8,7 +8,6 @@ import ProductCard from "@/Components/Home/ProductCard";
 // mantine import
 
 const FeaturedProductSection = ({ products }) => {
-  console.log(products);
   return (
     <section className="py-10">
       <Container>

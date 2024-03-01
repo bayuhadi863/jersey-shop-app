@@ -6,7 +6,7 @@ const PageTitle = ({ children }) => {
   return (
     <div className="bg-gray-100 shadow-inner">
       <Container>
-        <h1 className="text-3xl font-medium uppercase">{children}</h1>
+        <h1 className="text-2xl font-medium uppercase">{children}</h1>
       </Container>
     </div>
   );

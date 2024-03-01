@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\ProductController;
@@ -27,7 +28,7 @@ Route::get('/products/{product_id}', [ProductController::class, 'homeProductShow
 
 Route::get('/test', [CartController::class, 'index']);
 
-// REQUIRED AUTH
+// REQUIRED AUTH ADMIN
 Route::middleware('auth', 'role:admin')->group(function () {
   Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -37,10 +38,18 @@ Route::middleware('auth', 'role:admin')->group(function () {
   Route::get('/dashboard/product', [ProductController::class, 'index'])->name('product.index');
   Route::get('/dashboard/product/{product_id}', [ProductController::class, 'show'])->name('product.show');
   Route::post('/dashboard/product/{product_id}/size', [ProductController::class, 'storeProductSize'])->name('product.storeProductSize');
+});
 
-  // USERS
+// REQUIRED AUTH USER
+Route::middleware('auth', 'role:user')->group(function () {
   // CRUD CART
   Route::post('/products/{product_id}/carts', [CartController::class, 'store'])->name('cart.store');
+  Route::get('/carts', [CartController::class, 'index'])->name('cart.index');
+
+  // CRUD ADDRESS
+  Route::get('/addresses', [AddressController::class, 'index'])->name('address.index');
+  Route::get('/addresses/create', [AddressController::class, 'create'])->name('address.create');
+  Route::post('/addresses', [AddressController::class, 'store'])->name('address.store');
 });
 
 Route::middleware('auth')->group(function () {
