@@ -13,8 +13,14 @@ class Order extends Model
 
   protected $table = 'orders';
   protected $fillable = ['address_id', 'shipping_price', 'total_price', 'is_paid'];
+
   public function address()
   {
     return $this->belongsTo(Address::class, 'address_id');
+  }
+
+  public function single_order()
+  {
+    return $this->hasMany(SingleOrder::class, 'order_id');
   }
 }

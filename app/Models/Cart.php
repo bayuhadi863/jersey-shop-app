@@ -9,16 +9,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cart extends Model
 {
-    use HasFactory, SoftDeletes, HasUuids;
+  use HasFactory, SoftDeletes, HasUuids;
 
-    protected $table = 'carts';
-    protected $fillable = ['user_id', 'product_size_id', 'quantity', 'total_price'];
-    public function user()
-    {
-      return $this->belongsTo(User::class, 'user_id');
-    }
-    public function product_size()
-    {
-      return $this->belongsTo(ProductSize::class, 'product_size_id');
-    }
+  protected $table = 'carts';
+  protected $fillable = ['user_id', 'product_size_id', 'quantity', 'total_price'];
+  public function user()
+  {
+    return $this->belongsTo(User::class, 'user_id');
+  }
+  public function product_size()
+  {
+    return $this->belongsTo(ProductSize::class, 'product_size_id');
+  }
+  public function single_order()
+  {
+    return $this->hasOne(SingleOrder::class, 'cart_id');
+  }
 }

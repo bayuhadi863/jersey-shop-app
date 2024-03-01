@@ -22,7 +22,10 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+          'address_id' => 'required|string',
+          'address_id' => 'required|string',
+          'address_id' => 'required|string',
+          'address_id' => 'required|string',
         ];
     }
 }
