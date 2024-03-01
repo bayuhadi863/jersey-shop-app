@@ -22,6 +22,7 @@ import { TbLogout2 } from "react-icons/tb";
 import { RiBillLine } from "react-icons/ri";
 import { LuUser } from "react-icons/lu";
 import { PiAddressBookBold } from "react-icons/pi";
+import { IoWalletOutline } from "react-icons/io5";
 
 const links = [
   {
@@ -35,6 +36,29 @@ const links = [
   {
     label: "HUBUNGI KAMI",
     href: "/",
+  },
+];
+
+const userLinks = [
+  {
+    label: "Profil",
+    routeName: "profile.edit",
+    icon: <LuUser style={{ width: rem(14), height: rem(14) }} />,
+  },
+  {
+    label: "Alamat",
+    routeName: "address.index",
+    icon: <PiAddressBookBold style={{ width: rem(14), height: rem(14) }} />,
+  },
+  {
+    label: "Pesanan",
+    routeName: "order.index",
+    icon: <RiBillLine style={{ width: rem(14), height: rem(14) }} />,
+  },
+  {
+    label: "Dompet Saya",
+    routeName: "wallet.index",
+    icon: <IoWalletOutline style={{ width: rem(14), height: rem(14) }} />,
   },
 ];
 
@@ -114,35 +138,16 @@ const Header = ({ authenticatedUser }) => {
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                      <Menu.Item
-                        leftSection={
-                          <LuUser style={{ width: rem(14), height: rem(14) }} />
-                        }
-                        component={Link}
-                        href={route("profile.edit")}
-                      >
-                        Profil
-                      </Menu.Item>
-                      <Menu.Item
-                        leftSection={
-                          <PiAddressBookBold
-                            style={{ width: rem(14), height: rem(14) }}
-                          />
-                        }
-                        component={Link}
-                        href={route("address.index")}
-                      >
-                        Alamat
-                      </Menu.Item>
-                      <Menu.Item
-                        leftSection={
-                          <RiBillLine
-                            style={{ width: rem(14), height: rem(14) }}
-                          />
-                        }
-                      >
-                        Pesanan
-                      </Menu.Item>
+                      {userLinks.map((link, i) => (
+                        <Menu.Item
+                          key={i}
+                          leftSection={link.icon}
+                          component={Link}
+                          href={route(link.routeName)}
+                        >
+                          {link.label}
+                        </Menu.Item>
+                      ))}
 
                       <Menu.Divider />
 
