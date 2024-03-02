@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCartRequest;
+use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -17,7 +18,10 @@ class CartController extends Controller
 
     $carts = Cart::with('product_size.product', 'user')
       ->where('user_id', $user->id)
+      ->whereDoesntHave('single_order')
       ->get();
+
+    $addresses = Address::where('user_id', $user->id)->get();
 
     $data = $carts->map(function ($cart) {
       return [
@@ -30,8 +34,16 @@ class CartController extends Controller
       ];
     });
     // dd($data);
+    $shipping_price = 30000;
 
-    return Inertia::render('Home/CartListPage', ['data' => $data]);
+    return Inertia::render(
+      'Home/CartListPage',
+      [
+        'data' => $data,
+        'addresses' => $addresses,
+        'shipping_price' => $shipping_price
+      ]
+    );
   }
 
   public function store(StoreCartRequest $request, $product_id)

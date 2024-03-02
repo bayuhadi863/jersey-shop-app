@@ -29,11 +29,15 @@ const AddressListPage = ({ auth, addresses }) => {
         >
           Alamat Baru
         </Button>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-4">
-          {addresses.map((address) => (
-            <AddressCard key={address.id} address={address} />
-          ))}
-        </div>
+        {addresses.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-4">
+            {addresses.map((address) => (
+              <AddressCard key={address.id} address={address} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-6 text-sm text-gray-600 italic">Belum ada alamat.</p>
+        )}
       </Container>
     </HomeLayout>
   );

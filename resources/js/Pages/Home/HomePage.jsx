@@ -5,6 +5,9 @@ import React, { useEffect } from "react";
 import HomeLayout from "@/Layouts/HomeLayout";
 import HeroSection from "./Partials/HeroSection";
 import FeaturedProductSection from "./Partials/FeaturedProductSection";
+import ServicesSection from "./Partials/ServicesSection";
+import AboutSection from "./Partials/AboutSection";
+import ContactSection from "./Partials/ContactSection";
 // Mantine notifications import
 import { notifications } from "@mantine/notifications";
 
@@ -23,6 +26,9 @@ const HomePage = ({ auth, products, error }) => {
     <HomeLayout authenticatedUser={auth.user}>
       <HeroSection />
       <FeaturedProductSection products={products} />
+      <ServicesSection />
+      <AboutSection />
+      <ContactSection />
     </HomeLayout>
   );
 };

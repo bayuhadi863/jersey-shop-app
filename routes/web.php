@@ -5,7 +5,9 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -50,6 +52,16 @@ Route::middleware('auth', 'role:user')->group(function () {
   Route::get('/addresses', [AddressController::class, 'index'])->name('address.index');
   Route::get('/addresses/create', [AddressController::class, 'create'])->name('address.create');
   Route::post('/addresses', [AddressController::class, 'store'])->name('address.store');
+
+  // CRUD ORDER
+  Route::get('/orders', [OrderController::class, 'index'])->name('order.index');
+  Route::post('/orders', [OrderController::class, 'store'])->name('order.store');
+  Route::get('/orders/{order_id}', [OrderController::class, 'show'])->name('order.show');
+  Route::patch('/orders/{order_id}', [OrderController::class, 'update'])->name('order.update');
+
+  // CRUD WALLET
+  Route::patch('/wallet', [WalletController::class, 'update'])->name('wallet.update');
+  Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
 });
 
 Route::middleware('auth')->group(function () {
