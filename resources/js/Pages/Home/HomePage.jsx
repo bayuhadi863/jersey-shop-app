@@ -26,9 +26,9 @@ const HomePage = ({ auth, products, error }) => {
     <HomeLayout authenticatedUser={auth.user}>
       <HeroSection />
       <FeaturedProductSection products={products} />
-      <ServicesSection />
+      {/* <ServicesSection />
       <AboutSection />
-      <ContactSection />
+      <ContactSection /> */}
     </HomeLayout>
   );
 };

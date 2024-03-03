@@ -40,7 +40,7 @@ const ProductListPage = ({ auth, products }) => {
       <PageTitle>List Produk</PageTitle>
 
       <Container>
-        <div className="flex flex-col-reverse lg:flex-row gap-10">
+        <div className="flex flex-col-reverse lg:flex-row gap-10 py-4">
           {/* sidebar */}
           <aside className="basis-1/4">
             <div className="p-4 border">

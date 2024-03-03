@@ -56,7 +56,7 @@ const userLinks = [
     icon: <RiBillLine style={{ width: rem(14), height: rem(14) }} />,
   },
   {
-    label: "Dompet Saya",
+    label: "Dompet",
     routeName: "wallet.index",
     icon: <IoWalletOutline style={{ width: rem(14), height: rem(14) }} />,
   },
