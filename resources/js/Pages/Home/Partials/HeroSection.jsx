@@ -4,9 +4,9 @@ import React from "react";
 import { Carousel } from "@mantine/carousel";
 import { Button } from "@mantine/core";
 // image import
-import HeroImg2 from "/public/storage/hero_images/manchester-united-1.png";
-import HeroImg1 from "/public/storage/hero_images/real-madrid.png";
-import HeroImg3 from "/public/storage/hero_images/bayern-munchen.png";
+import HeroImg2 from "/public/storage/hero_images/manchester_united_home3-removebg-preview.png";
+import HeroImg1 from "/public/storage/hero_images/real_madrid_home1-removebg-preview.png";
+import HeroImg3 from "/public/storage/hero_images/bayern_munchen_home3-removebg-preview.png";
 // component import
 import Container from "@/Components/Home/Container";
 
