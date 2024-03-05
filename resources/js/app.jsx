@@ -8,6 +8,7 @@ import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
 import "mantine-react-table/styles.css";
 import "@mantine/carousel/styles.css";
+import "@mantine/charts/styles.css";
 
 import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";

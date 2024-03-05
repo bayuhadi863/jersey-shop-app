@@ -125,7 +125,7 @@ const Header = ({ authenticatedUser }) => {
                 />
 
                 {authenticatedUser ? (
-                  <Menu shadow="md" width={200}>
+                  <Menu shadow="md" width={170}>
                     <Menu.Target>
                       <Avatar
                         color="cyan"

@@ -13,7 +13,7 @@ import { Link } from "@inertiajs/react";
 // Icons import
 import { IoMdAddCircleOutline } from "react-icons/io";
 
-const ProductListPage = ({ data }) => {
+const ProductListPage = ({ data, auth }) => {
   //should be memoized or stable
   const columns = useMemo(
     () => [
@@ -61,7 +61,7 @@ const ProductListPage = ({ data }) => {
   });
 
   return (
-    <DashboardLayout>
+    <DashboardLayout authenticatedUser={auth.user}>
       <div className="flex flex-col sm:flex-row sm:justify-between gap-6 sm:items-center">
         <PageTitle>Daftar Produk</PageTitle>
         <div>

@@ -35,7 +35,7 @@ import { notifications } from "@mantine/notifications";
 // import icons
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 
-const CreateProductPage = ({ selectCategoriesData }) => {
+const CreateProductPage = ({ selectCategoriesData, auth }) => {
   // state for select category
   const [value, setValue] = useState("");
   // form data initiation
@@ -91,7 +91,7 @@ const CreateProductPage = ({ selectCategoriesData }) => {
   });
 
   return (
-    <DashboardLayout>
+    <DashboardLayout authenticatedUser={auth.user}>
       <PageTitle>Tambah Produk</PageTitle>
       <Box pos="relative">
         <LoadingOverlay

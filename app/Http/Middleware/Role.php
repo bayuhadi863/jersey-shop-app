@@ -17,11 +17,11 @@ class Role
   {
     if ($role === 'admin') {
       if (!$request->user()->is_admin) {
-        return redirect('/')->with('error', 'Anda bukan admin!');;
+        return redirect('/')->with('error', 'Tidak dapat mengakses, Anda bukan admin!');;
       }
     } else {
       if ($request->user()->is_admin) {
-        return redirect('/dashboard')->with('error', 'Anda bukan pengguna!');;
+        return redirect('/dashboard')->with('error', 'Tidak dapat mengakses, Anda bukan pembeli!');;
       }
     }
 
