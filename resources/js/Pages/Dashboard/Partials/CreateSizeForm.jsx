@@ -41,9 +41,6 @@ const CreateSizeForm = ({ product_id, sizes }) => {
 
   return (
     <>
-      <h2 className="text-xl font-semibold mb-4">
-        Tambah Ukuran dan Stok Produk
-      </h2>
       <Box pos="relative">
         <LoadingOverlay
           visible={processing}

@@ -51,8 +51,11 @@
         "clsx": "^2.1.0",
         "dayjs": "^1.11.10",
         "embla-carousel-react": "^8.0.0",
+        "inertia": "^0.0.7",
         "mantine-react-table": "^2.0.0-beta.0",
         "react-icons": "^5.0.1",
-        "recharts": "^2.12.2"
+        "recharts": "^2.12.2",
+        "tabler": "^1.0.0-alpha.8",
+        "tiptap": "^1.32.2"
     }
 }
