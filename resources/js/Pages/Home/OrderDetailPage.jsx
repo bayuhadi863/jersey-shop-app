@@ -55,7 +55,7 @@ const OrderDetailPage = ({ auth, order, wallet }) => {
 
   return (
     <HomeLayout authenticatedUser={auth.user}>
-      <Head title="Detail Pesanan" />
+      <Head title="Detail Pesanan Saya" />
 
       <PageTitle>Detail Pesanan</PageTitle>
       <Container>
@@ -126,24 +126,28 @@ const OrderDetailPage = ({ auth, order, wallet }) => {
               </p>
             </div>
 
-            <div>
-              <div className="mt-4 flex justify-between">
-                <p className="font-semibold mb-2">Saldo Saya:</p>
-                <p className="text-primary">
-                  Rp{wallet.balance.toLocaleString()}
-                </p>
+            {order.is_paid ? (
+              <p className="mt-4 text-green-500 font-semibold text-lg">Lunas</p>
+            ) : (
+              <div>
+                <div className="mt-4 flex justify-between">
+                  <p className="font-semibold mb-2">Saldo Saya:</p>
+                  <p className="text-primary">
+                    Rp{wallet.balance.toLocaleString()}
+                  </p>
+                </div>
+                <div className="mt-4 flex justify-between">
+                  <p className="font-semibold mb-2">Sisa</p>
+                  <p
+                    className={`text-lg font-medium ${
+                      remainingBalance < 0 ? "text-red-500" : "text-primary"
+                    }`}
+                  >
+                    Rp{remainingBalance.toLocaleString()}
+                  </p>
+                </div>
               </div>
-              <div className="mt-4 flex justify-between">
-                <p className="font-semibold mb-2">Sisa</p>
-                <p
-                  className={`text-lg font-medium ${
-                    remainingBalance < 0 ? "text-red-500" : "text-primary"
-                  }`}
-                >
-                  Rp{remainingBalance.toLocaleString()}
-                </p>
-              </div>
-            </div>
+            )}
 
             <Modal
               opened={opened}
@@ -152,8 +156,8 @@ const OrderDetailPage = ({ auth, order, wallet }) => {
               centered
             >
               <div>
-                Apakah Anda yaking melakukan tindakan ini? Setelah mengonfirmasi
-                maka saldo Anda akan langsung dikurangi.
+                Apakah Anda yakin ingin membayar pesanan ini? Setelah
+                mengonfirmasi maka saldo Anda akan langsung dikurangi.
               </div>
               <div className="mt-4 flex justify-end">
                 <Button
@@ -166,11 +170,15 @@ const OrderDetailPage = ({ auth, order, wallet }) => {
               </div>
             </Modal>
 
-            <div className="mt-4">
-              <Button size="md" fullWidth onClick={open}>
-                Bayar Sekarang
-              </Button>
-            </div>
+            {order.is_paid ? (
+              ""
+            ) : (
+              <div className="mt-4">
+                <Button size="md" fullWidth onClick={open}>
+                  Bayar Sekarang
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </Container>

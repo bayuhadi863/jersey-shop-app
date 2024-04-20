@@ -20,9 +20,37 @@ class OrderController extends Controller
     $user = Auth::user();
     $orders = Order::whereHas('single_order.cart', function ($query) use ($user) {
       $query->where('user_id', $user->id);
-    })->with('single_order.cart')->get();
+    })->with('single_order.cart', 'address')->get();
 
-    return Inertia::render('Home/OrderListPage', ['orders' => $orders]);
+    // mapping orders to change format data
+    $data = $orders->map(function ($order) {
+      $total_price = 0;
+      $products = $order->single_order->map(function ($singleOrder) use (&$total_price) {
+        $cart = $singleOrder->cart;
+        $product = $cart->product_size->product;
+        $total_price += $cart->total_price;
+
+        return [
+          'id' => $product->id,
+          'name' => $product->name,
+          'price' => $product->price,
+          'quantity' => $cart->quantity,
+          'size' => $cart->product_size->size,
+          'total_price' => $cart->total_price,
+        ];
+      });
+
+      return [
+        'id' => $order->id,
+        'total_price' => $order->total_price,
+        'shipping_price' => $order->shipping_price,
+        'address' => $order->address,
+        'products' => $products,
+        'is_paid' => $order->is_paid,
+      ];
+    });
+
+    return Inertia::render('Home/OrderListPage', ['data' => $data]);
   }
 
   public function show($order_id)
