@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 // react import
-import React from "react";
+import React, { useState } from "react";
+// inertia import
+import { useForm } from "@inertiajs/react";
 //component import
 import DashboardLayout from "@/Layouts/DashboardLayout";
 import PageTitle from "@/Components/Dashboard/PageTitle";
@@ -9,12 +11,20 @@ import Container from "@/Components/Home/Container";
 import TableSize from "./Partials/TableSize";
 // mantine import
 import { Carousel } from "@mantine/carousel";
-import { Image, Badge } from "@mantine/core";
+import { Image, Select } from "@mantine/core";
 
-const ProductDetailPage = ({ product, auth }) => {
+const EditDetailPage = ({ product, selectCategoriesData, auth }) => {
   console.log(product);
   const productImages = product.product_image;
-  const productCategory = product.category;
+
+  const [value, setValue] = useState("");
+  const { data, setData, post, processing, errors, reset } = useForm({
+    name: "",
+    category_id: "",
+    price: "",
+    image: [],
+    description: "",
+  });
 
   return (
     <DashboardLayout authenticatedUser={auth.user}>
@@ -38,34 +48,35 @@ const ProductDetailPage = ({ product, auth }) => {
               ))}
             </Carousel>
           </div>
+
+
           <div>
             <h1 className="text-3xl font-medium">{product.name}</h1>
             <div className="mt-6">
+              {/* SELECT CATEGORY START */}
               <div className="flex gap-2 items-center">
                 <p className="font-semibold">Klub:</p>
-                <Badge variant="outline" color="blue" radius="sm">
-                  {productCategory.name}
-                </Badge>
+              <Select
+                size="md"
+                placeholder="Pilih kategori"
+                data={selectCategoriesData}
+                value={value ? value.value : ""}
+                error={errors.category_id ? errors.category_id : false}
+              />
               </div>
+              {/* SELECT CATEGORY END */}
+              
               <p className="mb-2 mt-4 font-semibold">Deskripsi:</p>
               <div
                 dangerouslySetInnerHTML={{ __html: product.description }}
-                className="text-sm"
+                className="text-sm mt-6"
               />
             </div>
           </div>
         </div>
       </Container>
-
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-4">
-          Tambah Ukuran dan Stok Produk
-        </h2>
-        <TableSize />
-        <CreateSizeForm product_id={product.id} sizes={product.product_size} />
-      </div>
     </DashboardLayout>
   );
 };
 
-export default ProductDetailPage;
+export default EditDetailPage;
