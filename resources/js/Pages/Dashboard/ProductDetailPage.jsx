@@ -11,13 +11,13 @@ import TableSize from "./Partials/TableSize";
 import { Carousel } from "@mantine/carousel";
 import { Image, Badge } from "@mantine/core";
 
-const ProductDetailPage = ({ product }) => {
+const ProductDetailPage = ({ product, auth }) => {
   console.log(product);
   const productImages = product.product_image;
   const productCategory = product.category;
 
   return (
-    <DashboardLayout>
+    <DashboardLayout authenticatedUser={auth.user}>
       <PageTitle>Detail Produk</PageTitle>
       <p>{product.name}</p>
       <Container>
@@ -56,7 +56,6 @@ const ProductDetailPage = ({ product }) => {
           </div>
         </div>
       </Container>
-
 
       <div className="mt-6">
         <h2 className="text-xl font-semibold mb-4">

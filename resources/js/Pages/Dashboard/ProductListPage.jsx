@@ -13,6 +13,7 @@ import { Link } from "@inertiajs/react";
 // Icons import
 import { IoMdAddCircleOutline } from "react-icons/io";
 
+
 const ProductListPage = ({ data, auth }) => {
   //should be memoized or stable
   const columns = useMemo(
