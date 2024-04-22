@@ -20,15 +20,16 @@ const ProductListPage = ({ data, auth }) => {
     () => [
       {
         accessorKey: "id", //access nested data with dot notation
-        header: "Aksi",
-        Cell: ({ cell }) => (
-          <Link href={route("product.show", cell.getValue())}>Edit</Link>
+        header: (
+          <th colSpan={2}>Aksi</th> // Menggunakan colSpan={2} untuk menggabungkan dua cell dalam satu header
         ),
-        size: 80,
-      },
-      {
-        accessorKey: "name", //access nested data with dot notation
-        header: "Nama Produk",
+        Cell: ({ cell }) => (
+          <>
+            <Link href={route("product.show", cell.getValue())} style={{ marginRight: '12px' }}>View</Link>
+            <Link href={route("product.edit", cell.getValue())}>Edit</Link>
+          </>
+        ),
+        size: 120,
       },
       {
         accessorKey: "name", //access nested data with dot notation

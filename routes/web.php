@@ -39,6 +39,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
   Route::post('/dashboard/product', [ProductController::class, 'store'])->name('product.store');
   Route::get('/dashboard/product', [ProductController::class, 'index'])->name('product.index');
   Route::get('/dashboard/product/{product_id}', [ProductController::class, 'show'])->name('product.show');
+  Route::get('/dashboard/product/edit/{product_id}', [ProductController::class, 'edit'])->name('product.edit');
   Route::post('/dashboard/product/{product_id}/size', [ProductController::class, 'storeProductSize'])->name('product.storeProductSize');
 });
 
