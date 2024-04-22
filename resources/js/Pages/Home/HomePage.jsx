@@ -24,7 +24,7 @@ const HomePage = ({ auth, products, error }) => {
 
   return (
     <HomeLayout authenticatedUser={auth.user}>
-      <HeroSection />
+      <HeroSection user={auth.user} />
       <FeaturedProductSection products={products} />
       <ServicesSection />
       <AboutSection />

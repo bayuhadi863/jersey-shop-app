@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // react import
 import React from "react";
 // mantine import
@@ -9,26 +10,30 @@ import HeroImg1 from "/public/storage/hero_images/real-madrid.png";
 import HeroImg3 from "/public/storage/hero_images/bayern-munchen.png";
 // component import
 import Container from "@/Components/Home/Container";
+// Inertia import
+import { Link } from "@inertiajs/react";
 
 const heroDatas = [
   {
-    headline: "Lorem ipsum dolor sit amet",
-    subHeadline: "Lorem ipsum dolor sit amet amet sit ipsut dolor lorem",
+    headline: "Temukan Jersey Sepak Bola Terlengkap di MyJersey",
+    subHeadline:
+      "Koleksi terlengkap untuk memenuhi kebutuhan Anda sebagai pecinta sepak bola.",
     image: HeroImg1,
   },
   {
-    headline: "Lorem ipsum dolor sit amet",
-    subHeadline: "Lorem ipsum dolor sit amet amet sit ipsut dolor lorem",
+    headline: "Dapatkan Harga Termurah untuk Jersey Sepak Bola",
+    subHeadline: "MyJersey memberikan harga terbaik untuk produk berkualitas.",
     image: HeroImg2,
   },
   {
-    headline: "Lorem ipsum dolor sit amet",
-    subHeadline: "Lorem ipsum dolor sit amet amet sit ipsut dolor lorem",
+    headline: "Sumber Terpercaya untuk Produk Jersey Sepak Bola Original",
+    subHeadline:
+      "MyJersey hanya menjual produk original dan berkualitas tinggi.",
     image: HeroImg3,
   },
 ];
 
-const HeroSection = () => {
+const HeroSection = ({ user }) => {
   return (
     <section>
       <Carousel withIndicators loop>
@@ -46,14 +51,25 @@ const HeroSection = () => {
                   <h2 className="text-5xl font-semibold mt-4">
                     {data.subHeadline}
                   </h2>
-                  <div className="flex gap-4">
-                    <Button size="md" className="mt-6">
-                      Beli Sekarang
+                  {user.is_admin ? (
+                    <Button
+                      size="md"
+                      className="mt-6"
+                      component={Link}
+                      href="/dashboard"
+                    >
+                      Dahsboard
                     </Button>
-                    <Button variant="default" size="md" className="mt-6 ">
-                      Hubungi Kami
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="flex gap-4">
+                      <Button size="md" className="mt-6">
+                        Beli Sekarang
+                      </Button>
+                      <Button variant="default" size="md" className="mt-6 ">
+                        Hubungi Kami
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <img

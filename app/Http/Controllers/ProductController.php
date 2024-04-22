@@ -12,6 +12,7 @@ use App\Models\ProductSize;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -138,9 +139,19 @@ class ProductController extends Controller
     //
   }
 
-  public function homeProductIndex()
+  public function homeProductIndex(Request $request)
   {
-    $products = Product::with('product_image', 'product_size')->limit(8)->get();
+    $orderBy = $request->input('orderBy');
+    $order = $request->input('order');
+
+    if ($orderBy && $order) {
+      $products = Product::with('product_image', 'product_size')
+        ->orderBy($orderBy, $order)
+        ->limit(8)
+        ->get();
+    } else {
+      $products = Product::with('product_image', 'product_size')->limit(8)->get();
+    }
 
     return Inertia::render('Home/ProductListPage', ['products' => $products]);
   }

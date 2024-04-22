@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 // react import
 import React, { useState } from "react";
@@ -8,6 +9,8 @@ import Container from "@/Components/Home/Container";
 import ProductCard from "@/Components/Home/ProductCard";
 // mantine import
 import { Select, RangeSlider } from "@mantine/core";
+// Inertia import
+import { router } from "@inertiajs/react";
 
 const sortDatas = [
   {
@@ -33,6 +36,7 @@ const ProductListPage = ({ auth, products }) => {
   const [value, setValue] = useState("");
   const [priceRange, setPriceRange] = useState([20, 80]);
   const [priceRangeEnd, setPriceRangeEnd] = useState([20, 80]);
+  console.log("order", value);
   console.log(priceRangeEnd);
 
   return (
@@ -64,6 +68,25 @@ const ProductListPage = ({ auth, products }) => {
                 value={value ? value.value : ""}
                 onChange={(_value, option) => {
                   setValue(option);
+                  let orderBy = "";
+                  let order = "";
+                  if (option.value === "sort1") {
+                    orderBy = "price";
+                    order = "asc";
+                  } else if (option.value === "sort2") {
+                    orderBy = "price";
+                    order = "desc";
+                  } else if (option.value === "sort3") {
+                    orderBy = "sold";
+                    order = "desc";
+                  } else if (option.value === "sort4") {
+                    orderBy = "sold";
+                    order = "asc";
+                  }
+
+                  router.visit(
+                    route("product.homeProductIndex", { orderBy, order })
+                  );
                 }}
               />
             </div>
