@@ -12,7 +12,7 @@ use App\Models\ProductSize;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductController extends Controller
 {
@@ -119,66 +119,66 @@ class ProductController extends Controller
    * Show the form for editing the specified resource.
    */
   public function edit($product_id)
-{
+  {
     $categories = Category::select('id', 'name')->get();
     $selectCategoriesData = $categories->map(function ($category) {
-        return [
-            'value' => $category->id,
-            'label' => $category->name
-        ];
+      return [
+        'value' => $category->id,
+        'label' => $category->name
+      ];
     });
 
     $product = Product::with('product_image', 'category', 'product_size')->find($product_id);
 
     return Inertia::render('Dashboard/EditProductPage', [
-        'product' => $product,
-        'selectCategoriesData' => $selectCategoriesData
+      'product' => $product,
+      'selectCategoriesData' => $selectCategoriesData
     ]);
-}
-  
+  }
+
 
   /**
- * Update the specified resource in storage.
- */
-public function update(UpdateProductRequest $request, Product $product)
-{
+   * Update the specified resource in storage.
+   */
+  public function update(UpdateProductRequest $request, Product $product)
+  {
     $validated = $request->validated();
 
     if ($validated) {
-        $product->name = $request->input('name');
-        $product->category_id = $request->input('category_id');
-        $product->price = $request->input('price');
-        $product->description = $request->input('description');
+      $product->name = $request->input('name');
+      $product->category_id = $request->input('category_id');
+      $product->price = $request->input('price');
+      $product->description = $request->input('description');
 
-        // Simpan perubahan pada produk
-        $product->save();
+      // Simpan perubahan pada produk
+      $product->save();
 
-        // Jika ada gambar baru yang diunggah
-        if ($request->hasFile('image')) {
-            foreach ($request->file('image') as $image) {
-                $productImage = new ProductImage();
-                $productImage->product_id = $product->id;
-                $fileName = time() . $image->getClientOriginalName();
-                $image->storePubliclyAs('product_images', $fileName, 'public');
-                $productImage->image = $fileName;
-                $productImage->save();
-            }
+      // Jika ada gambar baru yang diunggah
+      if ($request->hasFile('image')) {
+        foreach ($request->file('image') as $image) {
+          $productImage = new ProductImage();
+          $productImage->product_id = $product->id;
+          $fileName = time() . $image->getClientOriginalName();
+          $image->storePubliclyAs('product_images', $fileName, 'public');
+          $productImage->image = $fileName;
+          $productImage->save();
         }
+      }
 
-        // Update informasi ukuran dan stok produk
-        if ($request->has('product_size')) {
-            foreach ($request->input('product_size') as $size) {
-                $productSize = ProductSize::findOrFail($size['id']);
-                $productSize->size = $size['size'];
-                $productSize->stock = $size['stock'];
-                $productSize->save();
-            }
+      // Update informasi ukuran dan stok produk
+      if ($request->has('product_size')) {
+        foreach ($request->input('product_size') as $size) {
+          $productSize = ProductSize::findOrFail($size['id']);
+          $productSize->size = $size['size'];
+          $productSize->stock = $size['stock'];
+          $productSize->save();
         }
+      }
     }
 
     // Redirect ke halaman yang sesuai
     return redirect()->route('product.index')->with('success', 'Produk berhasil diperbarui.');
-}
+  }
 
   /**
    * Remove the specified resource from storage.
@@ -190,20 +190,53 @@ public function update(UpdateProductRequest $request, Product $product)
 
   public function homeProductIndex(Request $request)
   {
-    $orderBy = $request->input('orderBy');
-    $order = $request->input('order');
+    $orderBy = $request->input('orderBy') ? $request->input('orderBy') : '';
+    $order = $request->input('order') ? $request->input('order') : '';
+    $maxPrice = $request->input('maxPrice') ? (int)$request->input('maxPrice') : Product::max('price');
+    $minPrice = $request->input('minPrice') ? (int)$request->input('minPrice') : Product::min('price');
 
-    if ($orderBy && $order) {
-      $products = Product::with('product_image', 'product_size')
-        ->orderBy($orderBy, $order)
-        ->limit(8)
-        ->get();
-    } else {
-      $products = Product::with('product_image', 'product_size')->limit(8)->get();
-    }
+    // if ($orderBy && $order) {
+    //   if (($orderBy === 'price' && ($order === 'asc' || $order === 'desc')) ||
+    //     ($orderBy === 'sold' && ($order === 'asc' || $order === 'desc'))
+    //   ) {
+    //     $query = Product::with('product_image', 'product_size');
 
-    return Inertia::render('Home/ProductListPage', ['products' => $products]);
+    //     if ($orderBy === 'sold') {
+    //       $query->withCount(['product_size as product_size_count' => function (Builder $query) {
+    //         $query->whereHas('cart.single_order');
+    //       }])->orderBy('product_size_count', $order);
+    //     } else {
+    //       $query->orderBy($orderBy, $order);
+    //     }
+
+    //     $products = $query->limit(9)->get();
+    //   } else {
+    //     $products = [];
+    //   }
+    // } else {
+    //   $products = Product::with('product_image', 'product_size')->limit(8)->get();
+    // }
+
+    $products = Product::with('product_image', 'product_size')->limit(8)->get();
+
+    $categoriesData = Category::all()->map(function ($category) {
+      return [
+        'value' => $category->id,
+        'label' => $category->name
+      ];
+    });
+
+    return Inertia::render('Home/ProductListPage', [
+      'products' => $products,
+      'categoriesData' => $categoriesData,
+      'maxPrice' => $maxPrice,
+      'minPrice' => $minPrice,
+      'orderBy' => $orderBy,
+      'order' => $order
+    ]);
   }
+
+
 
   public function homeProductShow($product_id)
   {

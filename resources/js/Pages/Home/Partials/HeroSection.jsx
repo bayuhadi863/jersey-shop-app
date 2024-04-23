@@ -51,7 +51,7 @@ const HeroSection = ({ user }) => {
                   <h2 className="text-5xl font-semibold mt-4">
                     {data.subHeadline}
                   </h2>
-                  {user.is_admin ? (
+                  {user && user.is_admin ? (
                     <Button
                       size="md"
                       className="mt-6"
