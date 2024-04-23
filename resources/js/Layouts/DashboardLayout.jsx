@@ -17,6 +17,7 @@ import { RiBillLine } from "react-icons/ri";
 import { PiTShirt } from "react-icons/pi";
 import { TbLogout2 } from "react-icons/tb";
 import { LuUser } from "react-icons/lu";
+import { FooterSimple } from "@/Components/Dashboard/Footer";
 
 const links = [
   {
@@ -177,8 +178,8 @@ export default function DashboardLayout({ children, authenticatedUser }) {
       </AppShell.Navbar>
       <AppShell.Main className="bg-gray-100 shadow-inner">
         <div className="p-4 min-h-screen">{children}</div>
-        <footer>Footer</footer>
       </AppShell.Main>
+      <FooterSimple />
     </AppShell>
   );
 }
