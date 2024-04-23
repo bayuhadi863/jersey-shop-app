@@ -19,10 +19,18 @@ const ProductDetailPage = ({ product, auth }) => {
   return (
     <DashboardLayout authenticatedUser={auth.user}>
       <PageTitle>Detail Produk</PageTitle>
-      <p>{product.name}</p>
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-          <div>
+
+          {/* Product Images */}
+          {productImages.length === 1 ? (
+            <Image
+              src={`/storage/product_images/${productImages[0].image}`}
+              w={400}
+              fit="contain"
+              alt="Gambar produk"
+            />
+          ) : (
             <Carousel loop>
               {productImages.map((item, i) => (
                 <Carousel.Slide key={i}>
@@ -37,7 +45,9 @@ const ProductDetailPage = ({ product, auth }) => {
                 </Carousel.Slide>
               ))}
             </Carousel>
-          </div>
+          )}
+          {/* End of Product Images */}
+
           <div>
             <h1 className="text-3xl font-medium">{product.name}</h1>
             <div className="mt-6">
@@ -46,6 +56,10 @@ const ProductDetailPage = ({ product, auth }) => {
                 <Badge variant="outline" color="blue" radius="sm">
                   {productCategory.name}
                 </Badge>
+              </div>
+              <div className="flex mt-4 gap-2 items-center">
+                <p className="font-semibold">Price:</p>
+                <p>{product.price}</p>
               </div>
               <p className="mb-2 mt-4 font-semibold">Deskripsi:</p>
               <div

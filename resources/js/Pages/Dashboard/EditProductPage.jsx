@@ -1,82 +1,283 @@
 /* eslint-disable react/prop-types */
 // react import
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+// component import
+import DashboardLayout from "@/Layouts/DashboardLayout";
+import PageTitle from "../../Components/Dashboard/PageTitle";
 // inertia import
 import { useForm } from "@inertiajs/react";
-//component import
-import DashboardLayout from "@/Layouts/DashboardLayout";
-import PageTitle from "@/Components/Dashboard/PageTitle";
-import CreateSizeForm from "./Partials/CreateSizeForm";
-import Container from "@/Components/Home/Container";
-import TableSize from "./Partials/TableSize";
-// mantine import
-import { Carousel } from "@mantine/carousel";
-import { Image, Select } from "@mantine/core";
+// Mantine core import
+import {
+  Button,
+  TextInput,
+  Select,
+  NumberInput,
+  Group,
+  rem,
+  Text,
+  Image,
+  SimpleGrid,
+  LoadingOverlay,
+  Box,
+} from "@mantine/core";
+// mantine hooks import
 
-const EditDetailPage = ({ product, selectCategoriesData, auth }) => {
-  console.log(product);
-  const productImages = product.product_image;
+// Dropzone Import
+import { Dropzone } from "@mantine/dropzone";
+// Mantine Rich Text Editor import
+import { RichTextEditor, Link } from "@mantine/tiptap";
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import Placeholder from "@tiptap/extension-placeholder";
+// Mantine notifications import
+import { notifications } from "@mantine/notifications";
+// import icons
+import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 
+const EditProductPage = ({ product, selectCategoriesData, auth }) => {
+  // state for select category
   const [value, setValue] = useState("");
+
+  // form data initiation
   const { data, setData, post, processing, errors, reset } = useForm({
-    name: "",
-    category_id: "",
-    price: "",
+    name: product.name || "",
+    category_id: product.category_id || "",
+    price: product.price || "",
     image: [],
-    description: "",
+    description: product.description || "",
   });
+
+  // Untuk category, karena nilai `category_id` diperlukan untuk `Select`, Anda perlu mengatur nilai `value` di `Select`.
+  useEffect(() => {
+    setValue(product.category_id ? { value: product.category_id, label: product.category.name } : "");
+  }, [product.category_id, product.category]);
+
+  // dropzone image preview
+  const previews = data.image.map((file, index) => {
+    const imageUrl = URL.createObjectURL(file);
+    return (
+      <Image
+        key={index}
+        src={imageUrl}
+        onLoad={() => URL.revokeObjectURL(imageUrl)}
+      />
+    );
+  });
+
+  // rich editor config
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Underline,
+      Link,
+      Placeholder.configure({ placeholder: "Masukkan deskripsi produk" }),
+    ],
+    content: data.description,
+    onUpdate: ({ editor }) => {
+      setData("description", editor.getHTML());
+    },
+  });
+
+  // handle form submit
+  const submit = (e) => {
+    e.preventDefault();
+    post(`/dashboard/product`, {
+      preserveScroll: true,
+      onSuccess: () => {
+        reset("name");
+        reset("category_id");
+        reset("price");
+        reset("image");
+        reset("description");
+        notifications.show({
+          color: "green",
+          title: "Success notification",
+          message: "Berhasil menambahkan produk baru!",
+        });
+      },
+    });
+  };
 
   return (
     <DashboardLayout authenticatedUser={auth.user}>
-      <PageTitle>Detail Produk</PageTitle>
-      <p>{product.name}</p>
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-          <div>
-            <Carousel loop>
-              {productImages.map((item, i) => (
-                <Carousel.Slide key={i}>
-                  <div className="flex justify-center">
-                    <Image
-                      src={`/storage/product_images/${item.image}`}
-                      w={400}
-                      fit="contain"
-                      alt="Gambar produk"
-                    />
-                  </div>
-                </Carousel.Slide>
-              ))}
-            </Carousel>
+      <PageTitle>Edit Produk</PageTitle>
+      <Box pos="relative">
+        <LoadingOverlay
+          visible={processing}
+          zIndex={1000}
+          overlayProps={{ radius: "sm", blur: 2 }}
+        />
+
+        <form className="flex flex-col gap-4 mt-6" onSubmit={submit}>
+          {/* INPUT NAME START */}
+          <TextInput
+            placeholder="Masukkan nama produk"
+            label="Nama Produk"
+            size="md"
+            value={data.name}
+            onChange={(e) => setData("name", e.target.value)}
+            error={errors.name ? errors.name : false}
+          />
+          {/* INPUT NAME END */}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* SELECT CATEGORY START */}
+            <Select
+              label="Kategori"
+              size="md"
+              placeholder="Pilih kategori"
+              data={selectCategoriesData}
+              value={value ? value.value : ""}
+              onChange={(_value, option) => {
+                setValue(option);
+                setData("category_id", option.value);
+              }}
+              error={errors.category_id ? errors.category_id : false}
+            />
+            {/* SELECT CATEGORY END */}
+
+            {/* INPUT NUMBER START */}
+            <NumberInput
+              size="md"
+              label="Harga"
+              placeholder="Masukkan harga produk"
+              prefix="Rp"
+              allowNegative={false}
+              allowDecimal={false}
+              thousandSeparator="."
+              decimalSeparator=","
+              value={data.price}
+              onChange={(value) => setData("price", parseInt(value))}
+              error={errors.price ? errors.price : false}
+            />
+            {/* INPUT NUMBER END */}
           </div>
 
-
+          {/* RICH TEXT EDITOR INPUT DESCRIPTION */}
           <div>
-            <h1 className="text-3xl font-medium">{product.name}</h1>
-            <div className="mt-6">
-              {/* SELECT CATEGORY START */}
-              <div className="flex gap-2 items-center">
-                <p className="font-semibold">Klub:</p>
-              <Select
-                size="md"
-                placeholder="Pilih kategori"
-                data={selectCategoriesData}
-                value={value ? value.value : ""}
-                error={errors.category_id ? errors.category_id : false}
-              />
-              </div>
-              {/* SELECT CATEGORY END */}
-              
-              <p className="mb-2 mt-4 font-semibold">Deskripsi:</p>
-              <div
-                dangerouslySetInnerHTML={{ __html: product.description }}
-                className="text-sm mt-6"
-              />
-            </div>
+            <label className=" font-medium">Deskripsi Produk</label>
+
+            <RichTextEditor editor={editor}>
+              <RichTextEditor.Toolbar sticky stickyOffset={60}>
+                <RichTextEditor.ControlsGroup>
+                  <RichTextEditor.Bold />
+                  <RichTextEditor.Italic />
+                  <RichTextEditor.Underline />
+                  <RichTextEditor.Strikethrough />
+                  <RichTextEditor.ClearFormatting />
+                </RichTextEditor.ControlsGroup>
+
+                <RichTextEditor.ControlsGroup>
+                  <RichTextEditor.H3 />
+                </RichTextEditor.ControlsGroup>
+
+                <RichTextEditor.ControlsGroup>
+                  <RichTextEditor.BulletList />
+                  <RichTextEditor.OrderedList />
+                </RichTextEditor.ControlsGroup>
+
+                <RichTextEditor.ControlsGroup>
+                  <RichTextEditor.Link />
+                  <RichTextEditor.Unlink />
+                </RichTextEditor.ControlsGroup>
+
+                <RichTextEditor.ControlsGroup>
+                  <RichTextEditor.Undo />
+                  <RichTextEditor.Redo />
+                </RichTextEditor.ControlsGroup>
+              </RichTextEditor.Toolbar>
+
+              <RichTextEditor.Content />
+            </RichTextEditor>
           </div>
-        </div>
-      </Container>
+          {/* RICH TEXT EDITOR END */}
+
+          {/* DROPZONE INPUT IMAGE */}
+          <div>
+            <label className=" font-medium">Gambar Produk (Maks 5MB)</label>
+            <Dropzone
+              onDrop={(files) => setData("image", files)}
+              onReject={(files) => console.log("rejected files", files)}
+              maxSize={5 * 1024 ** 2}
+              accept={["image/png", "image/jpeg", "image/jpg"]}
+            >
+              <Group
+                justify="center"
+                gap="xl"
+                mih={220}
+                style={{ pointerEvents: "none" }}
+                className={errors.image ? "border border-red-400 rounded" : ""}
+              >
+                <Dropzone.Accept>
+                  <IconUpload
+                    style={{
+                      width: rem(52),
+                      height: rem(52),
+                      color: "var(--mantine-color-blue-6)",
+                    }}
+                    stroke={1.5}
+                  />
+                </Dropzone.Accept>
+                <Dropzone.Reject>
+                  <IconX
+                    style={{
+                      width: rem(52),
+                      height: rem(52),
+                      color: "var(--mantine-color-red-6)",
+                    }}
+                    stroke={1.5}
+                  />
+                </Dropzone.Reject>
+                <Dropzone.Idle>
+                  <IconPhoto
+                    style={{
+                      width: rem(52),
+                      height: rem(52),
+                      color: errors.image
+                        ? "var(--mantine-color-red-6)"
+                        : "var(--mantine-color-dimmed)",
+                    }}
+                    stroke={1.5}
+                  />
+                </Dropzone.Idle>
+
+                <div>
+                  <Text size="xl" inline c={errors.image ? "red" : ""}>
+                    Drag images here or click to select files
+                  </Text>
+                  <Text
+                    size="sm"
+                    c={errors.image ? "red" : "dimmed"}
+                    inline
+                    mt={7}
+                  >
+                    Attach as many files as you like, each file should not
+                    exceed 5mb
+                  </Text>
+                </div>
+              </Group>
+            </Dropzone>
+            <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+
+            <SimpleGrid
+              cols={{ base: 1, sm: 4 }}
+              mt={previews.length > 0 ? "xl" : 0}
+            >
+              {previews}
+            </SimpleGrid>
+          </div>
+          {/* DROPZONE END */}
+          <div>
+            <Button type="submit" disabled={processing ? true : false}>
+              Tambah
+            </Button>
+            {/* <p>{recentlySuccessful ? "Sukses" : "gagal"}</p> */}
+          </div>
+        </form>
+      </Box>
     </DashboardLayout>
   );
 };
 
-export default EditDetailPage;
+export default EditProductPage;
