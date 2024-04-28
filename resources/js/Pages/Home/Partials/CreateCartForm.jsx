@@ -14,7 +14,7 @@ import { useForm } from "@inertiajs/react";
 // Mantine notifications import
 import { notifications } from "@mantine/notifications";
 
-const CreateCartForm = ({ product, selectSizeData }) => {
+const CreateCartForm = ({ product, selectSizeData, user, totalStock }) => {
   // state for select size
   const [value, setValue] = useState("");
   // form data initiation
@@ -27,13 +27,24 @@ const CreateCartForm = ({ product, selectSizeData }) => {
     e.preventDefault();
     post(`/products/${product.id}/carts`, {
       preserveScroll: true,
-      onSuccess: () => {
+      onSuccess: user.is_admin
+        ? null
+        : () => {
+            reset("product_size_id");
+            reset("quantity");
+            notifications.show({
+              color: "green",
+              title: "Success notification",
+              message: "Berhasil menambahkan ke keranjang!",
+            });
+          },
+      onError: () => {
         reset("product_size_id");
         reset("quantity");
         notifications.show({
-          color: "green",
-          title: "Success notification",
-          message: "Berhasil menambahkan ke keranjang!",
+          color: "red",
+          title: "Error notification",
+          message: "Gagal menambahkan ke keranjang!",
         });
       },
     });
@@ -50,72 +61,81 @@ const CreateCartForm = ({ product, selectSizeData }) => {
 
   return (
     <>
-      <Box pos="relative">
-        <LoadingOverlay
-          visible={processing}
-          zIndex={1000}
-          overlayProps={{ radius: "sm", blur: 2 }}
-        />
-        <form onSubmit={submit}>
-          <div className="grid grid-cols-2 gap-4">
-            <Select
-              size="md"
-              placeholder="Pilih ukuran"
-              data={selectSizeData}
-              value={value ? value.value : ""}
-              onChange={(_value, option) => {
-                setValue(option);
-                setData("product_size_id", option.value);
-                findProductSize(option.value);
-              }}
-              error={errors.product_size_id ? errors.product_size_id : false}
+      {product.product_size.length || totalStock > 0 ? (
+        <>
+          <p className="text-sm mb-4">Total stok produk: {totalStock}</p>
+          <Box pos="relative">
+            <LoadingOverlay
+              visible={processing}
+              zIndex={1000}
+              overlayProps={{ radius: "sm", blur: 2 }}
             />
-            <NumberInput
-              size="md"
-              placeholder="Jumlah"
-              allowNegative={false}
-              allowDecimal={false}
-              thousandSeparator="."
-              decimalSeparator=","
-              value={data.quantity}
-              clampBehavior="strict"
-              min={0}
-              max={selectedStock}
-              onChange={(value) => setData("quantity", parseInt(value))}
-              error={errors.quantity ? errors.quantity : false}
-            />
-          </div>
+            <form onSubmit={submit}>
+              <div className="grid grid-cols-2 gap-4">
+                <Select
+                  size="md"
+                  placeholder="Pilih ukuran"
+                  data={selectSizeData}
+                  value={value ? value.value : ""}
+                  onChange={(_value, option) => {
+                    setValue(option);
+                    setData("product_size_id", option.value);
+                    findProductSize(option.value);
+                  }}
+                  error={
+                    errors.product_size_id ? errors.product_size_id : false
+                  }
+                />
+                <NumberInput
+                  size="md"
+                  placeholder="Jumlah"
+                  allowNegative={false}
+                  allowDecimal={false}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  value={data.quantity}
+                  clampBehavior="strict"
+                  min={0}
+                  max={selectedStock}
+                  onChange={(value) => setData("quantity", parseInt(value))}
+                  error={errors.quantity ? errors.quantity : false}
+                />
+              </div>
 
-          {product.product_size.map(
-            (item) =>
-              item.id === data.product_size_id && (
-                <p
-                  key={item.id}
-                  className={`mt-4 text-sm ${
-                    calculateRemainingStock(item.stock, data.quantity) <= 5
-                      ? "text-red-500"
-                      : ""
-                  }`}
-                >
-                  Sisa stok:{" "}
-                  <span>
-                    {calculateRemainingStock(item.stock, data.quantity)}
-                  </span>
-                </p>
-              )
-          )}
+              {product.product_size.map(
+                (item) =>
+                  item.id === data.product_size_id && (
+                    <p
+                      key={item.id}
+                      className={`mt-4 text-sm ${
+                        calculateRemainingStock(item.stock, data.quantity) <= 5
+                          ? "text-red-500"
+                          : ""
+                      }`}
+                    >
+                      Sisa stok ukuran ini:{" "}
+                      <span>
+                        {calculateRemainingStock(item.stock, data.quantity)}
+                      </span>
+                    </p>
+                  )
+              )}
 
-          <p className="text-xl mt-4 text-primary">
-            Total: Rp{(product.price * data.quantity).toLocaleString()}
-          </p>
+              <p className="text-xl mt-4 text-primary">
+                Total: Rp{(product.price * data.quantity).toLocaleString()}
+              </p>
 
-          <div className="mt-6">
-            <Button type="submit" size="md" fullWidth disabled={processing}>
-              Masukkan Keranjang
-            </Button>
-          </div>
-        </form>
-      </Box>
+              <div className="mt-6">
+                <Button type="submit" size="md" fullWidth disabled={processing}>
+                  Masukkan Keranjang
+                </Button>
+              </div>
+            </form>
+          </Box>
+        </>
+      ) : (
+        <p className="text-sm italic">Stok produk kosong</p>
+      )}
     </>
   );
 };

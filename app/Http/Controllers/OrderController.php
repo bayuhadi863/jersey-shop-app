@@ -47,6 +47,7 @@ class OrderController extends Controller
         'address' => $order->address,
         'products' => $products,
         'is_paid' => $order->is_paid,
+        'created_at' => $order->created_at->format('d F Y H:i:s'),
       ];
     });
 
@@ -110,5 +111,72 @@ class OrderController extends Controller
       $wallet->balance -= $order->total_price;
       $wallet->save();
     }
+  }
+
+  public function destroy($order_id)
+  {
+    //return product_size stock
+    $carts = Cart::whereHas('single_order', function ($query) use ($order_id) {
+      $query->where('order_id', $order_id);
+    })->with('product_size')->get();
+    // dd($carts);
+    foreach ($carts as $cart) {
+      $productSize = $cart->product_size;
+      $productSize->stock += $cart->quantity;
+      $productSize->save();
+    }
+
+    $singleOrders = SingleOrder::where('order_id', $order_id)->get();
+    foreach ($singleOrders as $singleOrder) {
+      $singleOrder->delete();
+    }
+
+    $order = Order::find($order_id);
+    $order->delete();
+
+
+    return redirect()->route('order.index');
+  }
+
+  // ADMIN
+  public function adminIndex()
+  {
+    $orders = Order::with('single_order.cart', 'address')->get();
+
+    // mapping orders to change format data
+    $data = $orders->map(function ($order) {
+      $total_price = 0;
+      $products = $order->single_order->map(function ($singleOrder) use (&$total_price) {
+        $cart = $singleOrder->cart;
+        $product = $cart->product_size->product;
+        $total_price += $cart->total_price;
+
+        return [
+          'id' => $product->id,
+          'name' => $product->name,
+          'price' => $product->price,
+          'quantity' => $cart->quantity,
+          'size' => $cart->product_size->size,
+          'total_price' => $cart->total_price,
+        ];
+      });
+
+      $user = $order->single_order->first()->cart->user;
+
+      return [
+        'id' => $order->id,
+        'total_price' => $order->total_price,
+        'shipping_price' => $order->shipping_price,
+        'address' => $order->address,
+        'products' => $products,
+        'is_paid' => $order->is_paid,
+        'user' => $user,
+        'created_at' => $order->created_at->format('d F Y H:i:s'),
+      ];
+    });
+
+    // dd($data);
+
+    return Inertia::render('Dashboard/OrderListPage', ['data' => $data]);
   }
 }

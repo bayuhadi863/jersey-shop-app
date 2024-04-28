@@ -10,7 +10,7 @@ import CreateCartForm from "./Partials/CreateCartForm";
 import { Carousel } from "@mantine/carousel";
 import { Image, Badge } from "@mantine/core";
 
-const ProductDetailPage = ({ product, selectSizeData, auth }) => {
+const ProductDetailPage = ({ product, selectSizeData, auth, totalStock }) => {
   const productImages = product.product_image;
   const productCategory = product.category;
 
@@ -53,7 +53,12 @@ const ProductDetailPage = ({ product, selectSizeData, auth }) => {
           </div>
           <div>
             <h1 className="text-xl mb-6">Pilih ukuran dan jumlah</h1>
-            <CreateCartForm selectSizeData={selectSizeData} product={product} />
+            <CreateCartForm
+              selectSizeData={selectSizeData}
+              product={product}
+              user={auth.user}
+              totalStock={totalStock}
+            />
           </div>
         </div>
       </Container>

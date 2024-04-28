@@ -28,7 +28,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'homeProductIndex'])->name('product.homeProductIndex');
 Route::get('/products/{product_id}', [ProductController::class, 'homeProductShow'])->name('product.homeProductShow');
 
-Route::get('/test', [CartController::class, 'index']);
+Route::get('/back', function () {
+  return back();
+});
 
 // REQUIRED AUTH ADMIN
 Route::middleware('auth', 'role:admin')->group(function () {
@@ -41,6 +43,9 @@ Route::middleware('auth', 'role:admin')->group(function () {
   Route::get('/dashboard/product/{product_id}', [ProductController::class, 'show'])->name('product.show');
   Route::get('/dashboard/product/edit/{product_id}', [ProductController::class, 'edit'])->name('product.edit');
   Route::post('/dashboard/product/{product_id}/size', [ProductController::class, 'storeProductSize'])->name('product.storeProductSize');
+
+  // CRUD ORDER
+  Route::get('/dashboard/orders', [OrderController::class, 'adminIndex'])->name('order.adminIndex');
 });
 
 // REQUIRED AUTH USER
@@ -48,17 +53,20 @@ Route::middleware('auth', 'role:user')->group(function () {
   // CRUD CART
   Route::post('/products/{product_id}/carts', [CartController::class, 'store'])->name('cart.store');
   Route::get('/carts', [CartController::class, 'index'])->name('cart.index');
+  Route::delete('/carts/{cart_id}', [CartController::class, 'destroy'])->name('cart.destroy');
 
   // CRUD ADDRESS
   Route::get('/addresses', [AddressController::class, 'index'])->name('address.index');
   Route::get('/addresses/create', [AddressController::class, 'create'])->name('address.create');
   Route::post('/addresses', [AddressController::class, 'store'])->name('address.store');
+  Route::patch('/addresses/{address_id}', [AddressController::class, 'update'])->name('address.update');
 
   // CRUD ORDER
   Route::get('/orders', [OrderController::class, 'index'])->name('order.index');
   Route::post('/orders', [OrderController::class, 'store'])->name('order.store');
   Route::get('/orders/{order_id}', [OrderController::class, 'show'])->name('order.show');
   Route::patch('/orders/{order_id}', [OrderController::class, 'update'])->name('order.update');
+  Route::delete('/orders/{order_id}', [OrderController::class, 'destroy'])->name('order.destroy');
 
   // CRUD WALLET
   Route::patch('/wallet', [WalletController::class, 'update'])->name('wallet.update');

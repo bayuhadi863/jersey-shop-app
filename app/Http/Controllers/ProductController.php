@@ -12,7 +12,9 @@ use App\Models\ProductSize;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Hamcrest\Core\IsEqual;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -97,11 +99,20 @@ class ProductController extends Controller
     $validated = $request->validated();
 
     if ($validated) {
-      $product_size = new ProductSize();
-      $product_size->product_id = $product_id;
-      $product_size->size = $request->input('size');
-      $product_size->stock = $request->input('stock');
-      $product_size->save();
+      $currentProductSize = ProductSize::where('product_id', $product_id)
+        ->where('size', $request->input('size'))
+        ->first();
+
+      if ($currentProductSize) {
+        $currentProductSize->stock += $request->input('stock');
+        $currentProductSize->save();
+      } else {
+        $product_size = new ProductSize();
+        $product_size->product_id = $product_id;
+        $product_size->size = $request->input('size');
+        $product_size->stock = $request->input('stock');
+        $product_size->save();
+      }
     }
   }
 
@@ -111,6 +122,8 @@ class ProductController extends Controller
   public function show($product_id)
   {
     $product = Product::with('product_image', 'category', 'product_size')->find($product_id);
+
+    // dd($product);
 
     return Inertia::render('Dashboard/ProductDetailPage', ['product' => $product]);
   }
@@ -190,10 +203,396 @@ class ProductController extends Controller
 
   public function homeProductIndex(Request $request)
   {
+
+    $maxPrice = Product::max('price');
+    $minPrice = Product::min('price');
+
     $orderBy = $request->input('orderBy') ? $request->input('orderBy') : '';
-    $order = $request->input('order') ? $request->input('order') : '';
-    $maxPrice = $request->input('maxPrice') ? (int)$request->input('maxPrice') : Product::max('price');
-    $minPrice = $request->input('minPrice') ? (int)$request->input('minPrice') : Product::min('price');
+    $selectedMinPrice = $request->input('minPrice') ? (int)$request->input('minPrice') : $minPrice;
+    $selectedMaxPrice = $request->input('maxPrice') ? (int)$request->input('maxPrice') : $maxPrice;
+    $selectedCategory = $request->input('category') ? $request->input('category') : '';
+    $homeKit = $request->input('homeKit') ? $request->input('homeKit') : false;
+    $awayKit = $request->input('awayKit') ? $request->input('awayKit') : false;
+    $thirdKit = $request->input('thirdKit') ? $request->input('thirdKit') : false;
+
+    // dd($homeKit, $awayKit, $thirdKit);
+    // Log::info($homeKit ? 'true' : 'false');
+    function getLikeSentence($kit)
+    {
+      if ($kit === 'homeKit') {
+        return 'Home Kit';
+      } else if ($kit === 'awayKit') {
+        return 'Away Kit';
+      } else if ($kit === 'thirdKit') {
+        return 'Third Kit';
+      }
+    }
+
+    function getOrder($orderBy)
+    {
+      if ($orderBy === 'priceDesc' || $orderBy === 'soldDesc') {
+        return 'desc';
+      } else if ($orderBy === 'priceAsc' || $orderBy === 'soldAsc') {
+        return 'asc';
+      }
+    }
+
+    if ($homeKit && $awayKit && $thirdKit) {
+      if ($selectedCategory && $orderBy) {
+        if ($orderBy == 'soldDesc' || $orderBy == 'soldAsc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else if ($selectedCategory) {
+        $products = Product::with('product_image', 'product_size')
+          ->where('category_id', $selectedCategory)
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Away Kit%')
+              ->orWhere('name', 'like', '%Third Kit%');
+          })
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      } else if ($orderBy) {
+        if ($orderBy == 'priceDesc' || $orderBy == 'soldDesc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else {
+        $products = Product::with('product_image', 'product_size')
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Away Kit%')
+              ->orWhere('name', 'like', '%Third Kit%');
+          })
+          ->get();
+      }
+    } else if ($homeKit && $awayKit) {
+      if ($selectedCategory && $orderBy) {
+        if ($orderBy == 'soldDesc' || $orderBy == 'soldAsc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else if ($selectedCategory) {
+        $products = Product::with('product_image', 'product_size')
+          ->where('category_id', $selectedCategory)
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Away Kit%');
+          })
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      } else if ($orderBy) {
+        if ($orderBy == 'priceDesc' || $orderBy == 'soldDesc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Away Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else {
+        $products = Product::with('product_image', 'product_size')
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Away Kit%');
+          })
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      }
+    } else if ($homeKit && $thirdKit) {
+      if ($selectedCategory && $orderBy) {
+        if ($orderBy == 'soldDesc' || $orderBy == 'soldAsc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else if ($selectedCategory) {
+        $products = Product::with('product_image', 'product_size')
+          ->where('category_id', $selectedCategory)
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Third Kit%');
+          })
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      } else if ($orderBy) {
+        if ($orderBy == 'priceDesc' || $orderBy == 'soldDesc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else {
+        $products = Product::with('product_image', 'product_size')
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Third Kit%');
+          })
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      }
+    } else if ($awayKit && $thirdKit) {
+      if ($selectedCategory && $orderBy) {
+        if ($orderBy == 'soldDesc' || $orderBy == 'soldAsc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Away Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else if ($selectedCategory) {
+        $products = Product::with('product_image', 'product_size')
+          ->where('category_id', $selectedCategory)
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Third Kit%');
+          })
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      } else if ($orderBy) {
+        if ($orderBy == 'priceDesc' || $orderBy == 'soldDesc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where(function ($query) {
+              $query->where('name', 'like', '%Home Kit%')
+                ->orWhere('name', 'like', '%Third Kit%');
+            })
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else {
+        $products = Product::with('product_image', 'product_size')
+          ->where(function ($query) {
+            $query->where('name', 'like', '%Home Kit%')
+              ->orWhere('name', 'like', '%Third Kit%');
+          })
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      }
+    } else if ($homeKit || $awayKit || $thirdKit) {
+      $kit = $homeKit ? 'homeKit' : ($awayKit ? 'awayKit' : 'thirdKit');
+      if ($selectedCategory && $orderBy) {
+        if ($orderBy == 'soldDesc' || $orderBy == 'soldAsc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where('name', 'like', '%' . getLikeSentence($kit) . '%')
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->where('name', 'like', '%' . getLikeSentence($kit) . '%')
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else if ($selectedCategory) {
+        $products = Product::with('product_image', 'product_size')
+          ->where('category_id', $selectedCategory)
+          ->where('name', 'like', '%' . getLikeSentence($kit) . '%')
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      } else if ($orderBy) {
+        if ($orderBy == 'priceDesc' || $orderBy == 'soldDesc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where('name', 'like', '%' . getLikeSentence($kit) . '%')
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where('name', 'like', '%' . getLikeSentence($kit) . '%')
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else {
+        $products = Product::with('product_image', 'product_size')
+          ->where('name', 'like', '%' . getLikeSentence($kit) . '%')
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      }
+    } else if ($selectedCategory) {
+      if ($orderBy) {
+        if ($orderBy == 'soldDesc' || $orderBy == 'soldAsc') {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->withCount(['product_size as product_size_count' => function (Builder $query) {
+              $query->whereHas('cart.single_order');
+            }])->orderBy('product_size_count', getOrder($orderBy))
+            ->get();
+        } else {
+          $products = Product::with('product_image', 'product_size')
+            ->where('category_id', $selectedCategory)
+            ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+            ->orderBy('price', getOrder($orderBy))
+            ->get();
+        }
+      } else {
+        $products = Product::with('product_image', 'product_size')
+          ->where('category_id', $selectedCategory)
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->get();
+      }
+    } else if ($orderBy) {
+      if ($orderBy == 'soldDesc' || $orderBy == 'soldAsc') {
+        $products = Product::with('product_image', 'product_size')
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->withCount(['product_size as product_size_count' => function (Builder $query) {
+            $query->whereHas('cart.single_order');
+          }])->orderBy('product_size_count', getOrder($orderBy))
+          ->get();
+      } else {
+        $products = Product::with('product_image', 'product_size')
+          ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+          ->orderBy('price', getOrder($orderBy))
+          ->get();
+      }
+    } else {
+      $products = Product::with('product_image', 'product_size')
+        ->whereBetween('price', [$selectedMinPrice, $selectedMaxPrice])
+        ->get();
+    }
 
     // if ($orderBy && $order) {
     //   if (($orderBy === 'price' && ($order === 'asc' || $order === 'desc')) ||
@@ -217,7 +616,7 @@ class ProductController extends Controller
     //   $products = Product::with('product_image', 'product_size')->limit(8)->get();
     // }
 
-    $products = Product::with('product_image', 'product_size')->limit(8)->get();
+    // $products = Product::with('product_image', 'product_size')->limit(8)->get();
 
     $categoriesData = Category::all()->map(function ($category) {
       return [
@@ -232,7 +631,12 @@ class ProductController extends Controller
       'maxPrice' => $maxPrice,
       'minPrice' => $minPrice,
       'orderBy' => $orderBy,
-      'order' => $order
+      'selectedMinPrice' => $selectedMinPrice,
+      'selectedMaxPrice' => $selectedMaxPrice,
+      'selectedCategory' => $selectedCategory,
+      'homeKit' => $homeKit,
+      'awayKit' => $awayKit,
+      'thirdKit' => $thirdKit
     ]);
   }
 
@@ -242,6 +646,8 @@ class ProductController extends Controller
   {
     $product = Product::with('category', 'product_size', 'product_image')->find($product_id);
 
+    $totalStock = $product->product_size->sum('stock');
+
     $selectSizeData = $product->product_size->map(function ($item) {
       return [
         'value' => $item->id,
@@ -249,6 +655,6 @@ class ProductController extends Controller
       ];
     });
 
-    return Inertia::render('Home/ProductDetailPage', ['product' => $product, 'selectSizeData' => $selectSizeData]);
+    return Inertia::render('Home/ProductDetailPage', ['product' => $product, 'selectSizeData' => $selectSizeData, 'totalStock' => $totalStock]);
   }
 }

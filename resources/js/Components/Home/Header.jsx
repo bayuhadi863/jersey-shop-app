@@ -62,6 +62,14 @@ const userLinks = [
   },
 ];
 
+const adminLinks = [
+  {
+    label: "Profil",
+    routeName: "profile.edit",
+    icon: <LuUser style={{ width: rem(14), height: rem(14) }} />,
+  },
+];
+
 const getInitialName = (name) => {
   const words = name.split(" ");
   let initials = "";
@@ -138,16 +146,27 @@ const Header = ({ authenticatedUser }) => {
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                      {userLinks.map((link, i) => (
-                        <Menu.Item
-                          key={i}
-                          leftSection={link.icon}
-                          component={Link}
-                          href={route(link.routeName)}
-                        >
-                          {link.label}
-                        </Menu.Item>
-                      ))}
+                      {authenticatedUser.is_admin
+                        ? adminLinks.map((link, i) => (
+                            <Menu.Item
+                              key={i}
+                              leftSection={link.icon}
+                              component={Link}
+                              href={route(link.routeName)}
+                            >
+                              {link.label}
+                            </Menu.Item>
+                          ))
+                        : userLinks.map((link, i) => (
+                            <Menu.Item
+                              key={i}
+                              leftSection={link.icon}
+                              component={Link}
+                              href={route(link.routeName)}
+                            >
+                              {link.label}
+                            </Menu.Item>
+                          ))}
 
                       <Menu.Divider />
 

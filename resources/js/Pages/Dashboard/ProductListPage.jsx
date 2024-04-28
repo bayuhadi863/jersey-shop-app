@@ -7,12 +7,13 @@ import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import DashboardLayout from "@/Layouts/DashboardLayout";
 import PageTitle from "../../Components/Dashboard/PageTitle";
 //Mantice core import
-import { Button } from "@mantine/core";
+import { Button, ActionIcon } from "@mantine/core";
 // Iternia import
 import { Link } from "@inertiajs/react";
 // Icons import
 import { IoMdAddCircleOutline } from "react-icons/io";
-
+import { FiEye, FiTrash2 } from "react-icons/fi";
+import { BiEdit } from "react-icons/bi";
 
 const ProductListPage = ({ data, auth }) => {
   //should be memoized or stable
@@ -20,16 +21,40 @@ const ProductListPage = ({ data, auth }) => {
     () => [
       {
         accessorKey: "id", //access nested data with dot notation
-        header: (
-          <th colSpan={2}>Aksi</th> // Menggunakan colSpan={2} untuk menggabungkan dua cell dalam satu header
-        ),
+        // Menggunakan colSpan={2} untuk menggabungkan dua cell dalam satu header
+        header: <th colSpan={2}>Aksi</th>,
         Cell: ({ cell }) => (
-          <>
-            <Link href={route("product.show", cell.getValue())} style={{ marginRight: '12px' }}>View</Link>
-            <Link href={route("product.edit", cell.getValue())}>Edit</Link>
-          </>
+          <div>
+            <ActionIcon
+              variant="filled"
+              color="blue"
+              aria-label="Lihat"
+              component={Link}
+              href={route("product.show", cell.getValue())}
+            >
+              <FiEye />
+            </ActionIcon>
+            <ActionIcon
+              variant="filled"
+              color="yellow"
+              aria-label="Lihat"
+              component={Link}
+              href={route("product.show", cell.getValue())}
+              className="mx-1"
+            >
+              <BiEdit />
+            </ActionIcon>
+            <ActionIcon
+              variant="filled"
+              color="red"
+              aria-label="Lihat"
+              component={Link}
+              href={route("product.show", cell.getValue())}
+            >
+              <FiTrash2 />
+            </ActionIcon>
+          </div>
         ),
-        size: 120,
       },
       {
         accessorKey: "name", //access nested data with dot notation

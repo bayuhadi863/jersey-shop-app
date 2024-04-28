@@ -63,4 +63,14 @@ class CartController extends Controller
       $cart->save();
     }
   }
+
+  public function destroy($cart_id)
+  {
+    $user = Auth::user();
+    $cart = Cart::where('user_id', $user->id)->find($cart_id);
+
+    if ($cart) {
+      $cart->delete();
+    }
+  }
 }

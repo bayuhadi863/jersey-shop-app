@@ -22,7 +22,8 @@ class StoreProductSizeRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'size' => 'required|max:5|string|unique:product_sizes,size,NULL,id,product_id,' . $this->product_id,
+      'size' => 'required|max:5|string',
+      // |unique:product_sizes,size,NULL,id,product_id,' . $this->product_id,
       'stock' => 'required|numeric',
     ];
   }
@@ -33,7 +34,7 @@ class StoreProductSizeRequest extends FormRequest
       'size.required' => 'Ukuran produk tidak boleh kosong',
       'size.max' => 'Ukuran produk maksimal 5 karakter',
       'size.string' => 'Ukuran produk harus berupa string',
-      'size.unique' => 'Ukuran produk harus berbeda dari yang sudah ada',
+      // 'size.unique' => 'Ukuran produk harus berbeda dari yang sudah ada',
       'stock.required' => 'Stok produk tidak boleh kosong',
       'stock.numeric' => 'Stok produk harus berupa angka',
     ];

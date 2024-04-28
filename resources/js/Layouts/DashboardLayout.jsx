@@ -42,7 +42,7 @@ const links = [
   },
   {
     label: "Pesanan",
-    href: "/dashboard",
+    href: "/dashboard/orders",
     icon: <RiBillLine size="1rem" stroke={1.5} />,
   },
 ];
@@ -178,8 +178,8 @@ export default function DashboardLayout({ children, authenticatedUser }) {
       </AppShell.Navbar>
       <AppShell.Main className="bg-gray-100 shadow-inner">
         <div className="p-4 min-h-screen">{children}</div>
+        <FooterSimple />
       </AppShell.Main>
-      <FooterSimple />
     </AppShell>
   );
 }

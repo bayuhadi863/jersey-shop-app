@@ -15,6 +15,7 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 
 const theme = createTheme({
   primaryColor: "blue",
@@ -51,7 +52,9 @@ createInertiaApp({
       // eslint-disable-next-line react/react-in-jsx-scope
       <MantineProvider theme={theme}>
         <Notifications />
-        <App {...props} />
+        <ModalsProvider>
+          <App {...props} />
+        </ModalsProvider>
       </MantineProvider>
     );
   },

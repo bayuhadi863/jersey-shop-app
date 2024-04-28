@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 // react import
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 // component import
 import HomeLayout from "@/Layouts/HomeLayout";
 import PageTitle from "@/Components/Home/PageTitle";
@@ -14,19 +14,19 @@ import { router } from "@inertiajs/react";
 
 const sortDatas = [
   {
-    value: "sort1",
+    value: "priceAsc",
     label: "Harga terendah",
   },
   {
-    value: "sort2",
+    value: "priceDesc",
     label: "Harga tertinggi",
   },
   {
-    value: "sort3",
+    value: "soldDesc",
     label: "Paling banyak terjual",
   },
   {
-    value: "sort4",
+    value: "soldAsc",
     label: "Paling sedikit terjual",
   },
 ];
@@ -38,22 +38,32 @@ const ProductListPage = ({
   maxPrice,
   minPrice,
   orderBy,
-  order,
+  selectedMinPrice,
+  selectedMaxPrice,
+  selectedCategory,
+  homeKit,
+  awayKit,
+  thirdKit,
 }) => {
   // state for sorting
   const [value, setValue] = useState("");
   const [orderByState, setOrderByState] = useState(orderBy);
-  const [orderState, setOrderState] = useState(order);
 
   // Filtering
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
-  const [priceRangeEnd, setPriceRangeEnd] = useState([minPrice, maxPrice]);
+  const [priceRangeEnd, setPriceRangeEnd] = useState([
+    selectedMinPrice,
+    selectedMaxPrice,
+  ]);
   const marks = [
     { value: minPrice, label: formatPrice(minPrice) },
     { value: maxPrice, label: formatPrice(maxPrice) },
   ];
 
-  const [categoryValue, setCategoryValue] = useState("");
+  const [category, setCategory] = useState(selectedCategory);
+  const [homeKitState, setHomeKitState] = useState(homeKit);
+  const [awayKitState, setAwayKitState] = useState(awayKit);
+  const [thirdKitState, setThirdKitState] = useState(thirdKit);
 
   function formatPrice(price) {
     // Jika harga lebih besar dari atau sama dengan 1000
@@ -67,16 +77,9 @@ const ProductListPage = ({
     return price;
   }
 
-  useEffect(() => {
-    router.visit(
-      route("product.homeProductIndex", {
-        // orderBy: orderByState,
-        // order: orderState,
-        minPrice: priceRangeEnd[0],
-        maxPrice: priceRangeEnd[1],
-      })
-    );
-  }, [priceRangeEnd]);
+  console.log("homekit", homeKitState);
+  console.log("awaykit", awayKitState);
+  console.log("thirdkit", thirdKitState);
 
   return (
     <HomeLayout authenticatedUser={auth.user}>
@@ -86,25 +89,29 @@ const ProductListPage = ({
         <div className="flex flex-col-reverse lg:flex-row gap-10 py-4">
           {/* sidebar */}
           <aside className="basis-1/4">
-            <div className="py-4 px-8 border rounded-md">
+            <div className="py-4 px-6 border rounded-md">
               <p>Filter Harga</p>
               <RangeSlider
-                value={priceRange}
+                defaultValue={[selectedMinPrice, selectedMaxPrice]}
                 onChange={setPriceRange}
                 onChangeEnd={(value) => {
                   setPriceRangeEnd(value);
-                  // router.visit(
-                  //   route("product.homeProductIndex", {
-                  //     orderBy,
-                  //     order,
-                  //     minPrice: value[0],
-                  //     maxPrice: value[1],
-                  //   })
-                  // );
+                  router.visit(
+                    route("product.homeProductIndex", {
+                      orderBy: orderByState,
+                      minPrice: value[0],
+                      maxPrice: value[1],
+                      category: category,
+                      homeKit: homeKitState,
+                      awayKit: awayKitState,
+                      thirdKit: thirdKitState,
+                    })
+                  );
                 }}
                 min={minPrice}
                 max={maxPrice}
                 marks={marks}
+                step={10000}
                 className="mt-4"
               />
               <p className="mt-10 mb-2">Filter Klub</p>
@@ -112,15 +119,79 @@ const ProductListPage = ({
                 size="md"
                 placeholder="Pilih klub"
                 data={categoriesData}
-                value={categoryValue ? categoryValue.value : ""}
+                value={selectedCategory}
                 onChange={(_value, option) => {
-                  setCategoryValue(option);
+                  setCategory(option.value);
+                  router.visit(
+                    route("product.homeProductIndex", {
+                      orderBy: orderByState,
+                      minPrice: priceRangeEnd[0],
+                      maxPrice: priceRangeEnd[1],
+                      category: option.value,
+                      homeKit: homeKitState,
+                      awayKit: awayKitState,
+                      thirdKit: thirdKitState,
+                    })
+                  );
                 }}
               />
               <p className="mt-5 mb-2">Filter Jenis Jersey</p>
-              <Checkbox defaultChecked label="Home Kit" />
-              <Checkbox defaultChecked label="Away Kit" className="mt-2" />
-              <Checkbox defaultChecked label="Third Kit" className="mt-2" />
+              <Checkbox
+                checked={homeKitState}
+                onChange={(e) => {
+                  setHomeKitState(!homeKitState);
+                  router.visit(
+                    route("product.homeProductIndex", {
+                      orderBy: orderByState,
+                      minPrice: priceRangeEnd[0],
+                      maxPrice: priceRangeEnd[1],
+                      category: category,
+                      homeKit: e.target.checked,
+                      awayKit: awayKitState,
+                      thirdKit: thirdKitState,
+                    })
+                  );
+                }}
+                label="Home Kit"
+              />
+              <Checkbox
+                checked={awayKitState}
+                onChange={(e) => {
+                  setAwayKitState(!awayKitState);
+                  router.visit(
+                    route("product.homeProductIndex", {
+                      orderBy: orderByState,
+                      minPrice: priceRangeEnd[0],
+                      maxPrice: priceRangeEnd[1],
+                      category: category,
+                      homeKit: homeKitState,
+                      awayKit: e.target.checked,
+                      thirdKit: thirdKitState,
+                    })
+                  );
+                }}
+                label="Away Kit"
+                className="mt-2"
+              />
+              <Checkbox
+                checked={thirdKitState}
+                onChange={(e) => {
+                  setThirdKitState(!thirdKitState);
+                  router.visit(
+                    route("product.homeProductIndex", {
+                      orderBy: orderByState,
+                      minPrice: priceRangeEnd[0],
+                      maxPrice: priceRangeEnd[1],
+                      category: category,
+                      homeKit: homeKitState,
+                      awayKit: awayKitState,
+                      thirdKit: e.target.checked,
+                    })
+                  );
+                }}
+                label="Third Kit"
+                className="mt-2"
+              />
             </div>
           </aside>
 
@@ -131,30 +202,21 @@ const ProductListPage = ({
                 size="md"
                 placeholder="Urutkan berdasarkan..."
                 data={sortDatas}
-                value={value ? value.value : ""}
+                value={orderBy ? orderBy : value}
                 onChange={(_value, option) => {
                   setValue(option);
-                  if (option.value === "sort1") {
-                    setOrderByState("price");
-                    setOrderState("asc");
-                  } else if (option.value === "sort2") {
-                    setOrderByState("price");
-                    setOrderState("desc");
-                  } else if (option.value === "sort3") {
-                    setOrderByState("sold");
-                    setOrderState("desc");
-                  } else if (option.value === "sort4") {
-                    setOrderByState("sold");
-                    setOrderState("asc");
-                  }
-                  // router.visit(
-                  //   route("product.homeProductIndex", {
-                  //     orderBy: orderBy,
-                  //     order: order,
-                  //     minPrice: priceRangeEnd[0],
-                  //     maxPrice: priceRangeEnd[1],
-                  //   })
-                  // );
+                  setOrderByState(option.value);
+                  router.visit(
+                    route("product.homeProductIndex", {
+                      orderBy: option.value,
+                      minPrice: priceRangeEnd[0],
+                      maxPrice: priceRangeEnd[1],
+                      category: category,
+                      homeKit: homeKitState,
+                      awayKit: awayKitState,
+                      thirdKit: thirdKitState,
+                    })
+                  );
                 }}
               />
             </div>

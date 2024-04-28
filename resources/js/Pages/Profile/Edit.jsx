@@ -10,6 +10,7 @@ import Container from "@/Components/Home/Container";
 
 export default function Edit({ auth, mustVerifyEmail, status }) {
   return (
+    
     <HomeLayout authenticatedUser={auth.user}>
       <Head title="Profil Saya" />
       <PageTitle>Profil</PageTitle>

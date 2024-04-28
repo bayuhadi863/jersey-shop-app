@@ -21,7 +21,6 @@ const ProductDetailPage = ({ product, auth }) => {
       <PageTitle>Detail Produk</PageTitle>
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-
           {/* Product Images */}
           {productImages.length === 1 ? (
             <Image
@@ -75,7 +74,7 @@ const ProductDetailPage = ({ product, auth }) => {
         <h2 className="text-xl font-semibold mb-4">
           Tambah Ukuran dan Stok Produk
         </h2>
-        <TableSize />
+        <TableSize productSizes={product.product_size} />
         <CreateSizeForm product_id={product.id} sizes={product.product_size} />
       </div>
     </DashboardLayout>

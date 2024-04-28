@@ -1,7 +1,10 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import React from "react";
 // mantine import
-import { Badge } from "@mantine/core";
+import { Badge, Button } from "@mantine/core";
+// INertia import
+import { router } from "@inertiajs/react";
 
 const AddressCard = ({ address }) => {
   return (
@@ -19,10 +22,25 @@ const AddressCard = ({ address }) => {
           {address.postal_code}
         </p>
       </div>
-      {address.is_default && (
+      {address.is_default ? (
         <Badge radius="sm" variant="outline" size="sm" className="mt-2">
           Utama
         </Badge>
+      ) : (
+        <Button
+          size="xs"
+          className="mt-2"
+          onClick={() => {
+            router.visit(route("address.update", address.id), {
+              method: "patch",
+              data: {
+                is_default: true,
+              },
+            });
+          }}
+        >
+          Jadikan Utama
+        </Button>
       )}
     </div>
   );

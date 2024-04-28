@@ -8,8 +8,9 @@ import PageTitle from "@/Components/Home/PageTitle";
 // inertia import
 import { Head, router } from "@inertiajs/react";
 // mantine import
-import { Button, Badge, Modal } from "@mantine/core";
+import { Button, Badge, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { modals } from "@mantine/modals";
 // Mantine notifications import
 import { notifications } from "@mantine/notifications";
 
@@ -152,14 +153,14 @@ const OrderDetailPage = ({ auth, order, wallet }) => {
             <Modal
               opened={opened}
               onClose={close}
-              title="Mohon konfirmasi tindakan Anda"
+              title="Konfirmasi Pembayaran"
               centered
             >
-              <div>
+              <Text size="sm">
                 Apakah Anda yakin ingin membayar pesanan ini? Setelah
                 mengonfirmasi maka saldo Anda akan langsung dikurangi.
-              </div>
-              <div className="mt-4 flex justify-end">
+              </Text>
+              <div className="mt-2 flex justify-end">
                 <Button
                   onClick={handlePayClick}
                   className="mt-4"
@@ -173,7 +174,56 @@ const OrderDetailPage = ({ auth, order, wallet }) => {
             {order.is_paid ? (
               ""
             ) : (
-              <div className="mt-4">
+              <div className="mt-4 flex gap-4">
+                <Button
+                  size="md"
+                  color="red"
+                  fullWidth
+                  onClick={() => {
+                    modals.openConfirmModal({
+                      title: "Pembatalan Pesanan",
+                      centered: true,
+                      children: (
+                        <Text size="sm">
+                          Apakah anda yakin ingin membatalkan pesanan ini?
+                          Setelah mengonfirmasi maka pesanan Anda akan terhapus.
+                        </Text>
+                      ),
+                      labels: {
+                        confirm: "Hapus Pesanan",
+                        cancel: "Batal",
+                      },
+                      confirmProps: { color: "red" },
+                      onCancel: () => console.log("Cancel"),
+                      onConfirm: () => {
+                        router.visit(`/orders/${order.id}`, {
+                          method: "delete",
+                          onSuccess: () => {
+                            close();
+                            // router.visit("/orders");
+                            notifications.show({
+                              color: "green",
+                              title: "Success notification",
+                              message: "Berhasil membatalkan pesanan!",
+                            });
+                          },
+                          onError: (errors) => {
+                            close();
+                            if (errors.remainingBalance) {
+                              notifications.show({
+                                color: "red",
+                                title: "Error notification",
+                                message: errors.remainingBalance,
+                              });
+                            }
+                          },
+                        });
+                      },
+                    });
+                  }}
+                >
+                  Batalkan Pesanan
+                </Button>
                 <Button size="md" fullWidth onClick={open}>
                   Bayar Sekarang
                 </Button>

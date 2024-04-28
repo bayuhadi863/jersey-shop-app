@@ -93,7 +93,10 @@ const CreateOrderForm = ({
       <div className="mt-3 border-b border-gray-400 pb-3">
         <p className=" mb-2 font-medium">Alamat Pengiriman:</p>
         {addresses.length > 0 ? (
-          <Link className="flex gap-4 items-center hover:bg-gray-200 py-2 px-3 rounded border border-gray-300 transition">
+          <Link
+            href={route("address.index")}
+            className="flex gap-4 items-center hover:bg-gray-200 py-2 px-3 rounded border border-gray-300 transition"
+          >
             <div>
               <p className="text-xs">
                 {defaultAddress.recipient_name} | {defaultAddress.phone_number}

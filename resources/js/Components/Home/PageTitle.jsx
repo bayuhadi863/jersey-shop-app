@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from "react";
 import Container from "./Container";
+// icon import
+import { IoArrowBackCircleOutline } from "react-icons/io5";
+// inertia import
+import { Link } from "@inertiajs/react";
 
 const PageTitle = ({ children }) => {
   return (
