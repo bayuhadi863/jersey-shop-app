@@ -42,7 +42,9 @@ Route::middleware('auth', 'role:admin')->group(function () {
   Route::get('/dashboard/product', [ProductController::class, 'index'])->name('product.index');
   Route::get('/dashboard/product/{product_id}', [ProductController::class, 'show'])->name('product.show');
   Route::get('/dashboard/product/edit/{product_id}', [ProductController::class, 'edit'])->name('product.edit');
+  Route::post('/dashboard/product/{product_id}', [ProductController::class, 'update'])->name('product.update');
   Route::post('/dashboard/product/{product_id}/size', [ProductController::class, 'storeProductSize'])->name('product.storeProductSize');
+  Route::delete('/dashboard/product/{product_id}', [ProductController::class, 'destroy'])->name('product.destroy');
 
   // CRUD ORDER
   Route::get('/dashboard/orders', [OrderController::class, 'adminIndex'])->name('order.adminIndex');

@@ -153,11 +153,19 @@ class ProductController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(UpdateProductRequest $request, Product $product)
+  public function update(UpdateProductRequest $request, String $productId)
   {
+    // dd($request->all());
+    // dd($request->file('image'));
+    // dd($productId);
+
     $validated = $request->validated();
 
     if ($validated) {
+      $product = Product::find($productId);
+
+      // dd($product);
+
       $product->name = $request->input('name');
       $product->category_id = $request->input('category_id');
       $product->price = $request->input('price');
@@ -168,6 +176,15 @@ class ProductController extends Controller
 
       // Jika ada gambar baru yang diunggah
       if ($request->hasFile('image')) {
+        // Hapus gambar lama
+        foreach ($product->product_image as $image) {
+          $path = storage_path('app/public/product_images/' . $image->image);
+          if (file_exists($path))
+            unlink($path);
+        }
+
+        ProductImage::where('product_id', $product->id)->delete();
+
         foreach ($request->file('image') as $image) {
           $productImage = new ProductImage();
           $productImage->product_id = $product->id;
@@ -179,14 +196,14 @@ class ProductController extends Controller
       }
 
       // Update informasi ukuran dan stok produk
-      if ($request->has('product_size')) {
-        foreach ($request->input('product_size') as $size) {
-          $productSize = ProductSize::findOrFail($size['id']);
-          $productSize->size = $size['size'];
-          $productSize->stock = $size['stock'];
-          $productSize->save();
-        }
-      }
+      // if ($request->has('product_size')) {
+      //   foreach ($request->input('product_size') as $size) {
+      //     $productSize = ProductSize::findOrFail($size['id']);
+      //     $productSize->size = $size['size'];
+      //     $productSize->stock = $size['stock'];
+      //     $productSize->save();
+      //   }
+      // }
     }
 
     // Redirect ke halaman yang sesuai
@@ -196,9 +213,28 @@ class ProductController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Product $product)
+  public function destroy(String $productId)
   {
-    //
+    $product = Product::find($productId);
+
+    // Hapus gambar produk
+    // hapus dari storage
+    foreach ($product->product_image as $image) {
+      $path = storage_path('app/public/product_images/' . $image->image);
+      if (file_exists($path)) {
+        unlink($path);
+      }
+    }
+    ProductImage::where('product_id', $product->id)->delete();
+
+    // Hapus ukuran dan stok produk
+    ProductSize::where('product_id', $product->id)->delete();
+
+    // Hapus produk
+    $product->delete();
+
+    // Redirect ke halaman yang sesuai
+    return redirect()->route('product.index')->with('success', 'Produk berhasil dihapus.');
   }
 
   public function homeProductIndex(Request $request)

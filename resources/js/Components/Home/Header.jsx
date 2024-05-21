@@ -35,7 +35,7 @@ const links = [
   },
   {
     label: "HUBUNGI KAMI",
-    href: "/",
+    href: "/#contact",
   },
 ];
 
@@ -86,7 +86,7 @@ const Header = ({ authenticatedUser }) => {
 
   return (
     <>
-      <header className="text-gray-700">
+      <header className="text-gray-700 fixed top-0 right-0 left-0 bg-white z-50 ">
         <Container>
           <div className="flex justify-between items-center">
             <div className="flex gap-14 items-center ">
@@ -109,13 +109,15 @@ const Header = ({ authenticatedUser }) => {
               </nav>
             </div>
             <div className="flex gap-6 items-center">
-              <Link className="text-2xl relative" href={route("cart.index")}>
-                <RiShoppingBagLine />
+              {!authenticatedUser.is_admin && (
+                <Link className="text-2xl relative" href={route("cart.index")}>
+                  <RiShoppingBagLine />
 
-                <Badge className="absolute -top-1 -right-1" size="xs" circle>
+                  {/* <Badge className="absolute -top-1 -right-1" size="xs" circle>
                   1
-                </Badge>
-              </Link>
+                </Badge> */}
+                </Link>
+              )}
               <div className="hidden lg:flex gap-6 items-center">
                 <Input
                   placeholder="Cari produk"

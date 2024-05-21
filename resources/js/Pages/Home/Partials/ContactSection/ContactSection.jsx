@@ -1,14 +1,22 @@
-import React from 'react'
-import Container from '@/Components/Home/Container'
-import { Paper, Text, TextInput, Textarea, Button, Group, SimpleGrid } from '@mantine/core';
-import { ContactIconsList } from './ContactIcon';
-import classes from '../../css/ContactInfo.module.css';
+import React from "react";
+import Container from "@/Components/Home/Container";
+import {
+  Paper,
+  Text,
+  TextInput,
+  Textarea,
+  Button,
+  Group,
+  SimpleGrid,
+} from "@mantine/core";
+import { ContactIconsList } from "./ContactIcon";
+import classes from "../../css/ContactInfo.module.css";
 
 const ContactSection = () => {
   return (
-    <div>
+    <div id="contact">
       <Container>
-        <div className='mt-5 mx-20'>
+        <div className="mt-5 mx-20">
           <Paper shadow="md" radius="lg">
             <div className={classes.wrapper}>
               <div className={classes.contacts}>
@@ -19,7 +27,10 @@ const ContactSection = () => {
                 <ContactIconsList />
               </div>
 
-              <form className={classes.form} onSubmit={(event) => event.preventDefault()}>
+              <form
+                className={classes.form}
+                onSubmit={(event) => event.preventDefault()}
+              >
                 <Text fz="lg" fw={700} className={classes.title}>
                   Get in touch
                 </Text>
@@ -27,10 +38,19 @@ const ContactSection = () => {
                 <div className={classes.fields}>
                   <SimpleGrid cols={{ base: 1, sm: 2 }}>
                     <TextInput label="Your name" placeholder="Your name" />
-                    <TextInput label="Your email" placeholder="youremail@gmail.com" required />
+                    <TextInput
+                      label="Your email"
+                      placeholder="youremail@gmail.com"
+                      required
+                    />
                   </SimpleGrid>
 
-                  <TextInput mt="md" label="Subject" placeholder="Subject" required />
+                  <TextInput
+                    mt="md"
+                    label="Subject"
+                    placeholder="Subject"
+                    required
+                  />
 
                   <Textarea
                     mt="md"
@@ -51,7 +71,7 @@ const ContactSection = () => {
         </div>
       </Container>
     </div>
-  )
-}
+  );
+};
 
-export default ContactSection
+export default ContactSection;

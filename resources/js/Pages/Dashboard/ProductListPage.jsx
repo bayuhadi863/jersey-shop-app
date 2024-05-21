@@ -7,9 +7,11 @@ import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import DashboardLayout from "@/Layouts/DashboardLayout";
 import PageTitle from "../../Components/Dashboard/PageTitle";
 //Mantice core import
-import { Button, ActionIcon } from "@mantine/core";
+import { Button, ActionIcon, Text } from "@mantine/core";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
 // Iternia import
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 // Icons import
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { FiEye, FiTrash2 } from "react-icons/fi";
@@ -37,9 +39,9 @@ const ProductListPage = ({ data, auth }) => {
             <ActionIcon
               variant="filled"
               color="yellow"
-              aria-label="Lihat"
+              aria-label="Edit"
               component={Link}
-              href={route("product.show", cell.getValue())}
+              href={route("product.edit", cell.getValue())}
               className="mx-1"
             >
               <BiEdit />
@@ -47,14 +49,54 @@ const ProductListPage = ({ data, auth }) => {
             <ActionIcon
               variant="filled"
               color="red"
-              aria-label="Lihat"
-              component={Link}
-              href={route("product.show", cell.getValue())}
+              aria-label="Hapus"
+              onClick={() => {
+                modals.openConfirmModal({
+                  title: "Hapus Produk",
+                  centered: true,
+                  children: (
+                    <Text size="sm">
+                      Apakah anda yakin ingin menghapus produk ini? Anda tidak
+                      dapat mengembalikan produk yang sudah dihapus.
+                    </Text>
+                  ),
+                  labels: {
+                    confirm: "Hapus",
+                    cancel: "Batal",
+                  },
+                  confirmProps: { color: "red" },
+                  onCancel: () => console.log("Cancel"),
+                  onConfirm: () => {
+                    router.visit(`/dashboard/product/${cell.getValue()}`, {
+                      method: "delete",
+                      onSuccess: () => {
+                        close();
+                        notifications.show({
+                          color: "green",
+                          title: "Success notification",
+                          message: "Berhasil menghapus produk!",
+                        });
+                      },
+                      onError: (errors) => {
+                        close();
+                        if (errors.remainingBalance) {
+                          notifications.show({
+                            color: "red",
+                            title: "Error notification",
+                            message: errors.remainingBalance,
+                          });
+                        }
+                      },
+                    });
+                  },
+                });
+              }}
             >
               <FiTrash2 />
             </ActionIcon>
           </div>
         ),
+        size: 140,
       },
       {
         accessorKey: "name", //access nested data with dot notation

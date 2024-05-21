@@ -35,7 +35,7 @@ const heroDatas = [
 
 const HeroSection = ({ user }) => {
   return (
-    <section>
+    <section className="mt-24">
       <Carousel withIndicators loop>
         {heroDatas.map((data, i) => (
           <Carousel.Slide

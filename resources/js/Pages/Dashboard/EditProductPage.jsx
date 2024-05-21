@@ -50,7 +50,11 @@ const EditProductPage = ({ product, selectCategoriesData, auth }) => {
 
   // Untuk category, karena nilai `category_id` diperlukan untuk `Select`, Anda perlu mengatur nilai `value` di `Select`.
   useEffect(() => {
-    setValue(product.category_id ? { value: product.category_id, label: product.category.name } : "");
+    setValue(
+      product.category_id
+        ? { value: product.category_id, label: product.category.name }
+        : ""
+    );
   }, [product.category_id, product.category]);
 
   // dropzone image preview
@@ -82,7 +86,7 @@ const EditProductPage = ({ product, selectCategoriesData, auth }) => {
   // handle form submit
   const submit = (e) => {
     e.preventDefault();
-    post(`/dashboard/product`, {
+    post(`/dashboard/product/${product.id}`, {
       preserveScroll: true,
       onSuccess: () => {
         reset("name");
@@ -93,7 +97,7 @@ const EditProductPage = ({ product, selectCategoriesData, auth }) => {
         notifications.show({
           color: "green",
           title: "Success notification",
-          message: "Berhasil menambahkan produk baru!",
+          message: "Berhasil mengupdate produk!",
         });
       },
     });
