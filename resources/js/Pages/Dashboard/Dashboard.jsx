@@ -13,12 +13,6 @@ import { BarChart } from "@mantine/charts";
 // Mantine notifications import
 import { notifications } from "@mantine/notifications";
 
-export const data = [
-  { month: "Januari", Pengguna: 10, Produk: 10, Kategori: 4 },
-  { month: "Februari", Pengguna: 16, Produk: 18, Kategori: 5 },
-  { month: "Maret", Pengguna: 3, Produk: 2, Kategori: 1 },
-];
-
 const Dashboard = ({
   auth,
   error,
@@ -26,6 +20,9 @@ const Dashboard = ({
   totalProduct,
   totalCategory,
   totalOrder,
+  monthlyProduct,
+  monthlyUser,
+  monthlyOrder,
 }) => {
   const cartData = [
     {
@@ -59,6 +56,81 @@ const Dashboard = ({
       });
     }
   }, [error]);
+
+  const data = [
+    {
+      month: "Januari",
+      Pengguna: monthlyUser["January"],
+      Produk: monthlyProduct["January"],
+      Pesanan: monthlyOrder["January"],
+    },
+    {
+      month: "Februari",
+      Pengguna: monthlyUser["February"],
+      Produk: monthlyProduct["February"],
+      Pesanan: monthlyOrder["February"],
+    },
+    {
+      month: "Maret",
+      Pengguna: monthlyUser["March"],
+      Produk: monthlyProduct["March"],
+      Pesanan: monthlyOrder["March"],
+    },
+    {
+      month: "April",
+      Pengguna: monthlyUser["April"],
+      Produk: monthlyProduct["April"],
+      Pesanan: monthlyOrder["April"],
+    },
+    {
+      month: "Mei",
+      Pengguna: monthlyUser["May"],
+      Produk: monthlyProduct["May"],
+      Pesanan: monthlyOrder["May"],
+    },
+    {
+      month: "Juni",
+      Pengguna: monthlyUser["June"],
+      Produk: monthlyProduct["June"],
+      Pesanan: monthlyOrder["June"],
+    },
+    {
+      month: "Juli",
+      Pengguna: monthlyUser["July"],
+      Produk: monthlyProduct["July"],
+      Pesanan: monthlyOrder["July"],
+    },
+    {
+      month: "Agustus",
+      Pengguna: monthlyUser["August"],
+      Produk: monthlyProduct["August"],
+      Pesanan: monthlyOrder["August"],
+    },
+    {
+      month: "September",
+      Pengguna: monthlyUser["September"],
+      Produk: monthlyProduct["September"],
+      Pesanan: monthlyOrder["September"],
+    },
+    {
+      month: "Oktober",
+      Pengguna: monthlyUser["October"],
+      Produk: monthlyProduct["October"],
+      Pesanan: monthlyOrder["October"],
+    },
+    {
+      month: "November",
+      Pengguna: monthlyUser["November"],
+      Produk: monthlyProduct["November"],
+      Pesanan: monthlyOrder["November"],
+    },
+    {
+      month: "Desember",
+      Pengguna: monthlyUser["December"],
+      Produk: monthlyProduct["December"],
+      Pesanan: monthlyOrder["December"],
+    },
+  ];
 
   return (
     <DashboardLayout authenticatedUser={auth.user}>
@@ -100,7 +172,7 @@ const Dashboard = ({
           series={[
             { name: "Pengguna", color: "violet.6" },
             { name: "Produk", color: "blue.6" },
-            { name: "Kategori", color: "teal.6" },
+            { name: "Pesanan", color: "teal.6" },
           ]}
         />
       </div>

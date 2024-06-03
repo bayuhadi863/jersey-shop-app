@@ -71,7 +71,7 @@ const HeroSection = ({ user }) => {
                     </div>
                   )}
                 </div>
-                <div>
+                <div className="hidden lg:block">
                   <img
                     src={data.image}
                     alt={`image${i + 1}`}

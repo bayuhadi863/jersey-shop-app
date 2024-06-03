@@ -109,7 +109,7 @@ const Header = ({ authenticatedUser }) => {
               </nav>
             </div>
             <div className="flex gap-6 items-center">
-              {!authenticatedUser.is_admin && (
+              {authenticatedUser && !authenticatedUser.is_admin && (
                 <Link className="text-2xl relative" href={route("cart.index")}>
                   <RiShoppingBagLine />
 
@@ -118,6 +118,7 @@ const Header = ({ authenticatedUser }) => {
                 </Badge> */}
                 </Link>
               )}
+
               <div className="hidden lg:flex gap-6 items-center">
                 <Input
                   placeholder="Cari produk"
@@ -148,7 +149,7 @@ const Header = ({ authenticatedUser }) => {
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                      {authenticatedUser.is_admin
+                      {authenticatedUser && authenticatedUser.is_admin
                         ? adminLinks.map((link, i) => (
                             <Menu.Item
                               key={i}

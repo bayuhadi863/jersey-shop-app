@@ -16,9 +16,9 @@ const ContactSection = () => {
   return (
     <div id="contact">
       <Container>
-        <div className="mt-5 mx-20">
+        <div className="mt-5 mx-2 lg:mx-20">
           <Paper shadow="md" radius="lg">
-            <div className={classes.wrapper}>
+            <div className="flex flex-col lg:flex-row">
               <div className={classes.contacts}>
                 <Text fz="lg" fw={700} className={classes.title} c="#fff">
                   Contact information
